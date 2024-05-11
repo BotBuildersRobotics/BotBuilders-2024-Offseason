@@ -25,7 +25,7 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-  //private IntakeSubsystem intake = new IntakeSubsystem();
+  private IntakeSubsystem intake = new IntakeSubsystem();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -49,9 +49,9 @@ public class RobotContainer {
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-   // joystick.rightTrigger()
-	//			.whileTrue(new IntakeOnCommand(intake))
-	//			.whileFalse(new IntakeIdleCommand(intake));
+    joystick.rightTrigger()
+				.whileTrue(new IntakeOnCommand(intake))
+				.whileFalse(new IntakeIdleCommand(intake));
 
    
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
