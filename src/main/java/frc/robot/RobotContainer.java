@@ -23,6 +23,7 @@ import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
 import frc.robot.commands.IntakeReverseCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
@@ -38,7 +39,6 @@ public class RobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-                                                               // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -49,7 +49,7 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private Command autoRun = drivetrain.getAutoPath("Blue1");
+ // private Command autoRun = drivetrain.getAutoPath("Blue1");
 
   private void configureBindings() {
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -72,7 +72,7 @@ public class RobotContainer {
     joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
 
     //b button will activate the limelite april tag lookup.
-    joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate( - aprilTagRotation.getRotation() *  MaxAngularRate)));
+    joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
    /*joystick.b().whileTrue(drivetrain
@@ -94,6 +94,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoRun;// Commands.print("No Auto");
+    return Commands.print("No Auto");
   }
 }
