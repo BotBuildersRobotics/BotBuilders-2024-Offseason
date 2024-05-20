@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -16,8 +18,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
+import frc.robot.commands.IntakeReverseCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -37,6 +41,12 @@ public class RobotContainer {
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+  private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.RobotCentric rotate = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+ 
+  private final AprilTagRotationSource aprilTagRotation = new AprilTagRotationSource();
+
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private Command autoRun = drivetrain.getAutoPath("Blue1");
@@ -53,11 +63,20 @@ public class RobotContainer {
 				.whileTrue(new IntakeOnCommand(intake))
 				.whileFalse(new IntakeIdleCommand(intake));
 
+    //reverse intake
+    joystick.leftTrigger()
+        .whileTrue(new IntakeReverseCommand(intake));
+
+    //use the d pad up button to drive the robot forward - just a test
+    joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+
+    //b button will activate the limelite april tag lookup.
+    joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate( - aprilTagRotation.getRotation() *  MaxAngularRate)));
    
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
+   /*joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
+    */
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
