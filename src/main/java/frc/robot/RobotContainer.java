@@ -65,7 +65,8 @@ public class RobotContainer {
 
     //reverse intake
     joystick.leftTrigger()
-        .whileTrue(new IntakeReverseCommand(intake));
+        .whileTrue(new IntakeReverseCommand(intake))
+        .whileFalse(new IntakeIdleCommand(intake));
 
     //use the d pad up button to drive the robot forward - just a test
     joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
