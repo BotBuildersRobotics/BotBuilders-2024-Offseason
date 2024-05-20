@@ -6,15 +6,15 @@ import frc.robot.subsystems.IntakeSubsystem.WantedState;
 
 public class IntakeOnCommand extends Command
 {
-    private final IntakeSubsystem intakeSubSystem;
+  private final IntakeSubsystem intakeSubSystem;
 
-    public IntakeOnCommand(IntakeSubsystem subsystem) {
-        intakeSubSystem = subsystem;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
-      }
+  public IntakeOnCommand(IntakeSubsystem subsystem) {
+      intakeSubSystem = subsystem;
+      // Use addRequirements() here to declare subsystem dependencies.
+      addRequirements(subsystem);
+  }
 
-      @Override
+  @Override
   public void initialize() {
     intakeSubSystem.setWantedState(WantedState.INTAKE);
   }

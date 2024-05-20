@@ -69,13 +69,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public enum WantedState {
 		INTAKE,
-		IDLE
+		IDLE,
+    REVERSE
 		
   }
 
   public enum SystemState {
 		INTAKE,
-		IDLE
+		IDLE,
+    REVERSE
 	}
 
   private static class PeriodicIO {
@@ -86,15 +88,17 @@ public class IntakeSubsystem extends SubsystemBase {
 		double krakenFrontRollerSupplyCurrent;
 		double krakenFrontRollerStatorCurrent;
 
-        double krakenRearRollerSpeed;
+    double krakenRearRollerSpeed;
 		double krakenRearRollerTemperature;
 		double krakenRearRollerSupplyCurrent;
 		double krakenRearRollerStatorCurrent;
 
+    boolean reversed;
+
 
 		// OUTPUTS
 		double intakeFrontRollerPercentOutput;
-        double intakeRearRollerPercentOutput;
+    double intakeRearRollerPercentOutput;
 	}
 
 	
@@ -133,7 +137,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		periodicIO.krakenFrontRollerStatorCurrent = frontRoller.getStatorCurrent().getValueAsDouble();
 		periodicIO.krakenFrontRollerSupplyCurrent = frontRoller.getSupplyCurrent().getValueAsDouble();
 
-        periodicIO.krakenRearRollerSpeed = rearRoller.getVelocity().getValueAsDouble();
+    periodicIO.krakenRearRollerSpeed = rearRoller.getVelocity().getValueAsDouble();
 		periodicIO.krakenRearRollerTemperature = rearRoller.getDeviceTemp().getValueAsDouble();
 		periodicIO.krakenRearRollerStatorCurrent = rearRoller.getStatorCurrent().getValueAsDouble();
 		periodicIO.krakenRearRollerSupplyCurrent = rearRoller.getSupplyCurrent().getValueAsDouble();
@@ -141,51 +145,63 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	}
  
-    public void outputTelemetry() {
+  public void outputTelemetry() {
 
-        SmartDashboard.putString("intake/currentState", currentState.toString());
-        
-        SmartDashboard.putNumber("intake/outputFrontVel", periodicIO.intakeFrontRollerPercentOutput);
-        SmartDashboard.putNumber("intake/outputRearVel", periodicIO.intakeRearRollerPercentOutput);
-        
-        SmartDashboard.putNumber("intake/supplyFrontStatorCurrent", periodicIO.krakenFrontRollerStatorCurrent);
-        SmartDashboard.putNumber("intake/supplyRearStatorCurrent", periodicIO.krakenRearRollerStatorCurrent);
-        
-        SmartDashboard.putNumber("intake/frontSpeed", periodicIO.krakenFrontRollerSpeed);
-        SmartDashboard.putNumber("intake/rearSpeed", periodicIO.krakenRearRollerSpeed);
+      SmartDashboard.putString("intake/currentState", currentState.toString());
+      
+      SmartDashboard.putNumber("intake/outputFrontVel", periodicIO.intakeFrontRollerPercentOutput);
+      SmartDashboard.putNumber("intake/outputRearVel", periodicIO.intakeRearRollerPercentOutput);
+      
+      SmartDashboard.putNumber("intake/supplyFrontStatorCurrent", periodicIO.krakenFrontRollerStatorCurrent);
+      SmartDashboard.putNumber("intake/supplyRearStatorCurrent", periodicIO.krakenRearRollerStatorCurrent);
+      
+      SmartDashboard.putNumber("intake/frontSpeed", periodicIO.krakenFrontRollerSpeed);
+      SmartDashboard.putNumber("intake/rearSpeed", periodicIO.krakenRearRollerSpeed);
 
-        SmartDashboard.putNumber("intake/frontTemp", periodicIO.krakenFrontRollerTemperature);
-        SmartDashboard.putNumber("intake/rearTemp", periodicIO.krakenRearRollerTemperature);
+      SmartDashboard.putNumber("intake/frontTemp", periodicIO.krakenFrontRollerTemperature);
+      SmartDashboard.putNumber("intake/rearTemp", periodicIO.krakenRearRollerTemperature);
 
-        SmartDashboard.putNumber("intake/frontSupplyCurrent", periodicIO.krakenFrontRollerSupplyCurrent);
-        SmartDashboard.putNumber("intake/rearSupplyCurrent", periodicIO.krakenRearRollerSupplyCurrent);
-        
-    }
+      SmartDashboard.putNumber("intake/frontSupplyCurrent", periodicIO.krakenFrontRollerSupplyCurrent);
+      SmartDashboard.putNumber("intake/rearSupplyCurrent", periodicIO.krakenRearRollerSupplyCurrent);
+      
+  }
 
-    public void writePeriodicOuputs()
-    {
-        if(currentState == SystemState.IDLE){
-            frontRoller.setControl(new CoastOut());
-            rearRoller.setControl(new CoastOut());
-        }else{
-        
-            frontOut.EnableFOC = true;
-            rearOut.EnableFOC = true;
-            frontRoller.setControl(frontOut.withOutput(periodicIO.intakeFrontRollerPercentOutput));
-            rearRoller.setControl(rearOut.withOutput(periodicIO.intakeRearRollerPercentOutput));
-           
-        }
-    }
+  public void writePeriodicOuputs()
+  {
+      if(currentState == SystemState.IDLE){
+          frontRoller.setControl(new CoastOut());
+          rearRoller.setControl(new CoastOut());
+      }else{
+      
+          frontOut.EnableFOC = true;
+          rearOut.EnableFOC = true;
+
+          if(periodicIO.reversed){
+            frontRoller.setInverted(false);
+            rearRoller.setInverted(true);
+          }else{
+            frontRoller.setInverted(true);
+            rearRoller.setInverted(false);
+          }
+          frontRoller.setControl(frontOut.withOutput(periodicIO.intakeFrontRollerPercentOutput));
+          rearRoller.setControl(rearOut.withOutput(periodicIO.intakeRearRollerPercentOutput));
+          
+      }
+  }
    
 	public void processLoop() {
 		SystemState newState;
 		switch (currentState) {
+      case IDLE:
+				newState = handleIdle();
+				break;
+      case REVERSE:
+        newState = handleReverse();
+        break;
 			default:
 				newState = handleIntake();
 				break;
-			case IDLE:
-				newState = handleIdle();
-				break;
+			
 		}
 		if (newState != currentState) {
 			currentState = newState;
@@ -193,20 +209,31 @@ public class IntakeSubsystem extends SubsystemBase {
 		}
 	}
 
-    private SystemState handleIntake() {
+  private SystemState handleIntake() {
+    periodicIO.reversed = false;
 		periodicIO.intakeFrontRollerPercentOutput = 0.5; 
 		periodicIO.intakeRearRollerPercentOutput = 0.5;
-        return defaultStateChange();
+    periodicIO.reversed = false;
+    return defaultStateChange();
 	}
 
-     private SystemState handleIdle() {
+  private SystemState handleReverse(){
+    periodicIO.reversed = true;
+    periodicIO.intakeFrontRollerPercentOutput = 0.5; 
+		periodicIO.intakeRearRollerPercentOutput = 0.5;
+    return defaultStateChange();
+  }
+
+  private SystemState handleIdle() {
 		periodicIO.intakeFrontRollerPercentOutput = 0;
 		periodicIO.intakeRearRollerPercentOutput = 0;
-        return defaultStateChange();
+    return defaultStateChange();
 	}
 
-    private SystemState defaultStateChange() {
+  private SystemState defaultStateChange() {
 		switch(wantedState) {
+      case REVERSE:
+        return SystemState.REVERSE;
 			case INTAKE:
 			
 				//this is for more complex state changes.
