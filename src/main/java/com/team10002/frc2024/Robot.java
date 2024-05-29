@@ -5,6 +5,9 @@
 package com.team10002.frc2024;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+
+import java.util.logging.LogManager;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.team10002.frc2024.controlboard.ControlBoard;
 import com.team10002.frc2024.controlboard.DriverControls;
@@ -66,6 +69,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
 		CrashTracker.logRobotConstruction();
+    mDrive = CommandSwerveDrivetrain.getInstance();
 	}
   
   @Override
@@ -76,6 +80,7 @@ public class Robot extends TimedRobot {
       //  m_robotContainer = new RobotContainer(); //L
 
         mIntakeRollers = IntakeSubsystem.getInstance();
+        mDrive = CommandSwerveDrivetrain.getInstance();
 
         mDrive.setDefaultCommand( // Drivetrain will execute this command periodically
         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
@@ -84,22 +89,18 @@ public class Robot extends TimedRobot {
             .withRotationalRate(-mControlBoard.driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-
-
-        mDrive = CommandSwerveDrivetrain.getInstance();
-
         CrashTracker.logRobotInit();
 
 			  LiveWindow.disableAllTelemetry();
 
 
-        // spotless:off
-			mSubsystemManager.setSubsystems(
-				mIntakeRollers,
-				mVisionDevices,
-				mLimelight
-			);
-			// spotless:on
+          // spotless:off
+        mSubsystemManager.setSubsystems(
+          mIntakeRollers,
+          mVisionDevices,
+          mLimelight
+        );
+        // spotless:on
 
 
         mSubsystemManager.registerEnabledLoops(mEnabledLooper);
@@ -109,7 +110,7 @@ public class Robot extends TimedRobot {
 
 			  DataLogManager.start();
 
-    } catch (Throwable t) {
+     } catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
 		}
@@ -131,7 +132,10 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+
+    
+  }
 
   @Override
   public void disabledExit() {}
@@ -154,12 +158,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
 
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
-
-
     try {
 			RobotState.getInstance().setIsInAuto(false);
 			VisionDeviceManager.setDisableVision(false);
@@ -177,26 +175,26 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-      try {
-
+     // try {
+        CrashTracker.logMarker("TP");
         mControlBoard.update();
 
         //TODO: Test this out - we might not need the command scheduler for this.
-        /*
-         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
+        
+       /*   mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-mControlBoard.driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-mControlBoard.driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ) 
+        ); */
          
       
-        */
+        
 			mDriverControls.oneControllerMode();
 
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
+	//	} catch (Throwable t) {
+	//		CrashTracker.logThrowableCrash(t);
+	//		throw t;
+	//	}
   }
 
   @Override

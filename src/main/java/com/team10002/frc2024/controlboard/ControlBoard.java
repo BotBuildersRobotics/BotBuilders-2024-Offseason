@@ -23,16 +23,16 @@ public class ControlBoard {
 	}
 
 	public final CustomXboxController driver;
-	public final CustomXboxController operator;
+	//public final CustomXboxController operator;
 
 	private ControlBoard() {
 		driver = new CustomXboxController(0);
-		operator = new CustomXboxController(Constants.kButtonGamepadPort);
+		//operator = new CustomXboxController(Constants.kButtonGamepadPort);
 	}
 
 	public void update() {
 		driver.update();
-		operator.update();
+		//operator.update();
 	}
 
 	

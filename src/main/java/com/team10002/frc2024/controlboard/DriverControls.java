@@ -1,7 +1,9 @@
 package com.team10002.frc2024.controlboard;
 
+import com.team10002.frc2024.loops.CrashTracker;
 import com.team10002.frc2024.subsystems.LEDs;
 import com.team10002.frc2024.subsystems.Superstructure;
+import com.team10002.lib.logger.LogUtil;
 
 public class DriverControls {
 
@@ -23,7 +25,9 @@ public class DriverControls {
         }else{
             mSuperstructure.intakeIdle();
         }
-		
+
+        
+		CrashTracker.logMarker("one Controller Mode");
 	}
 
 	/* TWO CONTROLLERS */

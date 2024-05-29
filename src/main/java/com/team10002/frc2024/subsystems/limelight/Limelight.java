@@ -67,7 +67,8 @@ public class Limelight extends Subsystem {
 
 	@Override
 	public void readPeriodicInputs() {
-		double timestamp = Timer.getFPGATimestamp();
+		return;
+		/*double timestamp = Timer.getFPGATimestamp();
 		if (RobotBase.isReal()) {
 			inputs.heartbeat = LimelightHelpers.getLimelightNTDouble(name, "hb");
 			inputs.jsonDump = LimelightHelpers.getJSONDump(name);
@@ -99,7 +100,7 @@ public class Limelight extends Subsystem {
 						return robot_translation.translateBy(targetPosition.rotateBy(
 								Drive.getInstance().getHeading().rotateBy(cameraYaw)));
 					})
-					.toList();*/
+					.toList();
 
 			List<Translation2d> positions = new ArrayList<>();
 
@@ -134,6 +135,7 @@ public class Limelight extends Subsystem {
 		}
 
 		noteScan();
+		*/
 	}
 
 	@Override
