@@ -3,7 +3,7 @@ package com.team10002.frc2024.subsystems.limelight;
 import com.team10002.frc2024.Constants;
 import com.team10002.frc2024.Constants.LimelightConstants;
 import com.team10002.frc2024.FieldLayout;
-
+import com.team10002.frc2024.subsystems.CommandSwerveDrivetrain;
 import com.team10002.frc2024.subsystems.LEDs;
 import com.team10002.frc2024.subsystems.Subsystem;
 import com.team10002.frc2024.subsystems.limelight.LimelightHelpers.LimelightResults;
@@ -27,6 +27,7 @@ public class Limelight extends Subsystem {
 
 	private boolean isConnected = false;
 	private static Limelight mInstance = null;
+
 
 	// Init using our constants
 	public static Limelight getInstance() {
@@ -67,7 +68,9 @@ public class Limelight extends Subsystem {
 
 	@Override
 	public void readPeriodicInputs() {
+		//CommandSwerveDrivetrain.getInstance().
 		return;
+
 		/*double timestamp = Timer.getFPGATimestamp();
 		if (RobotBase.isReal()) {
 			inputs.heartbeat = LimelightHelpers.getLimelightNTDouble(name, "hb");
@@ -81,7 +84,7 @@ public class Limelight extends Subsystem {
 			previousHeartbeat = inputs.heartbeat;
 			double observationTime = timestamp - getTotalLatencySeconds(inputs.results);
 
-			Translation2d robot_translation = new Translation2d();// Drive.getInstance().getPose().getTranslation();
+			Translation2d robot_translation =  Drive.getInstance().getPose().getTranslation();
 
 			List<Translation2d> targetPositions = null;/*  Arrays.stream(inputs.results.targetingResults.targets_Detector)
 					.map(target -> {

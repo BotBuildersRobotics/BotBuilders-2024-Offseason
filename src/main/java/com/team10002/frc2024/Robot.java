@@ -6,8 +6,6 @@ package com.team10002.frc2024;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
-import java.util.logging.LogManager;
-
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.team10002.frc2024.controlboard.ControlBoard;
 import com.team10002.frc2024.controlboard.DriverControls;
@@ -21,17 +19,16 @@ import com.team10002.frc2024.subsystems.limelight.Limelight.Pipeline;
 import com.team10002.frc2024.subsystems.vision.VisionDeviceManager;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
+import com.team10002.lib.wpi.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
-
-  //private RobotContainer m_robotContainer;
+ 
 
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   private final ControlBoard mControlBoard = ControlBoard.getInstance();
@@ -77,7 +74,7 @@ public class Robot extends TimedRobot {
     
     try 
     {
-      //  m_robotContainer = new RobotContainer(); //L
+     
 
         mIntakeRollers = IntakeSubsystem.getInstance();
         mDrive = CommandSwerveDrivetrain.getInstance();
@@ -134,11 +131,41 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
 
+    try 
+    {
+      boolean alliance_changed = false;
+			if (DriverStation.getAlliance().isPresent()) {
+				if (DriverStation.getAlliance().get() == Alliance.Red) {
+					alliance_changed = !is_red_alliance;
+					is_red_alliance = true;
+				} else if (DriverStation.getAlliance().get() == Alliance.Blue) {
+					alliance_changed = is_red_alliance;
+					is_red_alliance = false;
+				}
+			} else {
+				alliance_changed = true;
+			}
+
+			if (Timer.getFPGATimestamp() - disable_enter_time > 5.0) {
+				
+				disable_enter_time = Double.POSITIVE_INFINITY;
+			}
+
+      if (alliance_changed) {
+				System.out.println("Alliance changed! Requesting trajectory regeneration!");
+				
+				mLimelight.setPipeline(is_red_alliance ? Pipeline.AUTO_RED : Pipeline.AUTO_BLUE);
+			}
+
+
+    } catch (Throwable t) {
+			CrashTracker.logThrowableCrash(t);
+			throw t;
+		}
     
   }
 
-  @Override
-  public void disabledExit() {}
+ 
 
   @Override
   public void autonomousInit() {
