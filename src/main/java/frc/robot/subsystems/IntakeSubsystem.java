@@ -39,11 +39,11 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
 
 
-    frontRoller = new TalonFX(14, TunerConstants.kCANbusName);//Constants.FRONT_ROLLER_CAN_ID);
+    frontRoller = new TalonFX(14,"Default Name");//Constants.FRONT_ROLLER_CAN_ID);
     frontRoller.setInverted(true);
     frontRoller.setNeutralMode(NeutralModeValue.Coast);
 
-    rearRoller = new TalonFX(15, TunerConstants.kCANbusName);//Constants.REAR_ROLLER_CAN_ID);
+    rearRoller = new TalonFX(15, "Default Name");//Constants.REAR_ROLLER_CAN_ID);
     rearRoller.setInverted(false);
     rearRoller.setNeutralMode(NeutralModeValue.Coast);
    
@@ -116,10 +116,10 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    readPeriodicInputs();
+    //readPeriodicInputs();
     processLoop();
     writePeriodicOuputs();
-    outputTelemetry();
+    //outputTelemetry();
    
 
   }
@@ -177,10 +177,10 @@ public class IntakeSubsystem extends SubsystemBase {
           rearOut.EnableFOC = true;
 
           if(periodicIO.reversed){
-            frontRoller.setInverted(false);
+            frontRoller.setInverted(true);
             rearRoller.setInverted(true);
           }else{
-            frontRoller.setInverted(true);
+            frontRoller.setInverted(false);
             rearRoller.setInverted(false);
           }
           frontRoller.setControl(frontOut.withOutput(periodicIO.intakeFrontRollerPercentOutput));
