@@ -76,6 +76,7 @@ public class IntakeSubsystem extends Subsystem {
 
 			@Override
 			public void onLoop(double timestamp) {
+				
 				periodicIO.roller_demand = mState.roller_voltage;
 			}
 
@@ -136,6 +137,7 @@ public class IntakeSubsystem extends Subsystem {
 		return new Request() {
 			@Override
 			public void act() {
+				
 				setState(_wantedState);
 			}
 

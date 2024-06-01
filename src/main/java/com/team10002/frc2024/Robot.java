@@ -14,6 +14,7 @@ import com.team10002.frc2024.loops.CrashTracker;
 import com.team10002.frc2024.loops.Looper;
 import com.team10002.frc2024.subsystems.CommandSwerveDrivetrain;
 import com.team10002.frc2024.subsystems.IntakeSubsystem;
+import com.team10002.frc2024.subsystems.Superstructure;
 import com.team10002.frc2024.subsystems.limelight.Limelight;
 import com.team10002.frc2024.subsystems.limelight.Limelight.Pipeline;
 import com.team10002.frc2024.subsystems.vision.VisionDeviceManager;
@@ -33,6 +34,9 @@ public class Robot extends TimedRobot {
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   private final ControlBoard mControlBoard = ControlBoard.getInstance();
 	private final DriverControls mDriverControls = new DriverControls();
+
+
+  private final Superstructure mSuperstructure = Superstructure.getInstance();
 	
 
 // vision
@@ -79,12 +83,12 @@ public class Robot extends TimedRobot {
         mIntakeRollers = IntakeSubsystem.getInstance();
         mDrive = CommandSwerveDrivetrain.getInstance();
 
-        mDrive.setDefaultCommand( // Drivetrain will execute this command periodically
+       /*  mDrive.setDefaultCommand( // Drivetrain will execute this command periodically
         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-mControlBoard.driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-mControlBoard.driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+        ));*/
 
         CrashTracker.logRobotInit();
 
@@ -95,7 +99,8 @@ public class Robot extends TimedRobot {
         mSubsystemManager.setSubsystems(
           mIntakeRollers,
           mVisionDevices,
-          mLimelight
+          mLimelight,
+          mSuperstructure
         );
         // spotless:on
 
@@ -108,6 +113,7 @@ public class Robot extends TimedRobot {
 			  DataLogManager.start();
 
      } catch (Throwable t) {
+      System.out.println("CRASH");
 			CrashTracker.logThrowableCrash(t);
 			throw t;
 		}
@@ -119,7 +125,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     
-    CommandScheduler.getInstance().run(); //L
+    //CommandScheduler.getInstance().run(); //L
 
 
 
@@ -191,6 +197,8 @@ public class Robot extends TimedRobot {
 			mDisabledLooper.stop();
 			mEnabledLooper.start();
 
+      mSuperstructure.intakeIdle();
+
 			mLimelight.setPipeline(Pipeline.TELEOP);
       
 		} catch (Throwable t) {
@@ -203,16 +211,18 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
      // try {
-        CrashTracker.logMarker("TP");
+        
+
         mControlBoard.update();
 
         //TODO: Test this out - we might not need the command scheduler for this.
         
-       /*   mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
+       
+         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-mControlBoard.driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-mControlBoard.driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ); */
+        ).execute(); 
          
       
         
@@ -245,7 +255,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
+    //CommandScheduler.getInstance().cancelAll();
+    mDisabledLooper.stop();
+    mEnabledLooper.stop();
   }
 
   @Override

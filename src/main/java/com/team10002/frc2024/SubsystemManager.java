@@ -70,6 +70,7 @@ public class SubsystemManager implements ILooper {
 		@Override
 		public void onLoop(double timestamp) {
 			// Read
+			
 			for (int i = 0; i < mAllSubsystems.size(); i++) {
 				mAllSubsystems.get(i).readPeriodicInputs();
 			}

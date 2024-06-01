@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.team10002.frc2024.loops.ILooper;
+import com.team10002.frc2024.loops.Loop;
 import com.team10002.lib.requests.ParallelRequest;
 import com.team10002.lib.requests.Request;
 import com.team10002.lib.requests.SequentialRequest;
@@ -31,6 +32,7 @@ public class Superstructure extends Subsystem {
 
 
     public void request(Request r) {
+		
 		setActiveRequest(r);
 		clearRequestQueue();
 	}
@@ -63,6 +65,41 @@ public class Superstructure extends Subsystem {
 
     @Override
 	public void registerEnabledLoops(ILooper enabledLooper) {
+		enabledLooper.register(new Loop() {
+			@Override
+			public void onStart(double timestamp) {
+				clearRequestQueue();
+			}
+
+			@Override
+			public void onLoop(double timestamp) {
+				try {
+					if (hasNewRequest && activeRequest != null) {
+						activeRequest.act();
+						hasNewRequest = false;
+					}
+
+					if (activeRequest == null) {
+						if (queuedRequests.isEmpty()) {
+							allRequestsComplete = true;
+						} else {
+							request(queuedRequests.remove(0));
+						}
+					} else if (activeRequest.isFinished()) {
+						activeRequest = null;
+					}
+
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onStop(double timestamp) {
+				stop();
+			}
+		});
 	}
 
 	@Override
@@ -97,7 +134,7 @@ public class Superstructure extends Subsystem {
     }
 
     public void intakeIdle(){
-        request(new SequentialRequest(mIntakeRollers.stateRequest(IntakeSubsystem.State.INTAKING)));
+        request(new SequentialRequest(mIntakeRollers.stateRequest(IntakeSubsystem.State.IDLE)));
     }
 
 }

@@ -17,17 +17,21 @@ public class DriverControls {
 
 	public void oneControllerMode() {
 
-
-        if(mControlBoard.driver.rightTrigger.wasActivated()){
+        
+        if(mControlBoard.driver.rightTrigger.isBeingPressed()){
             mSuperstructure.intake();
-        }else if(mControlBoard.driver.leftTrigger.wasActivated()){
+            
+            
+        }else if(mControlBoard.driver.leftTrigger.isBeingPressed()){
             mSuperstructure.exhaustState();
+           
         }else{
             mSuperstructure.intakeIdle();
+           
         }
 
         
-		CrashTracker.logMarker("one Controller Mode");
+		
 	}
 
 	/* TWO CONTROLLERS */
