@@ -30,6 +30,16 @@ public class DriverControls {
            
         }
 
+        if(mControlBoard.driver.bButton.isBeingPressed()){
+             mSuperstructure.shoot();
+        }else{
+            mSuperstructure.shootIdle();
+        }
+
+        if(mControlBoard.driver.leftBumper.isBeingPressed()){
+            mSuperstructure.fieldRelative();
+        }
+
         
 		
 	}

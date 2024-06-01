@@ -14,6 +14,7 @@ import com.team10002.frc2024.loops.CrashTracker;
 import com.team10002.frc2024.loops.Looper;
 import com.team10002.frc2024.subsystems.CommandSwerveDrivetrain;
 import com.team10002.frc2024.subsystems.IntakeSubsystem;
+import com.team10002.frc2024.subsystems.ShooterSubsystem;
 import com.team10002.frc2024.subsystems.Superstructure;
 import com.team10002.frc2024.subsystems.limelight.Limelight;
 import com.team10002.frc2024.subsystems.limelight.Limelight.Pipeline;
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
   // subsystem instances
 	private CommandSwerveDrivetrain mDrive;
   private IntakeSubsystem mIntakeRollers;
+  private ShooterSubsystem mShooter;
 
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -82,6 +84,7 @@ public class Robot extends TimedRobot {
 
         mIntakeRollers = IntakeSubsystem.getInstance();
         mDrive = CommandSwerveDrivetrain.getInstance();
+        mShooter = ShooterSubsystem.getInstance();
 
        /*  mDrive.setDefaultCommand( // Drivetrain will execute this command periodically
         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
@@ -99,6 +102,7 @@ public class Robot extends TimedRobot {
         mSubsystemManager.setSubsystems(
           mIntakeRollers,
           mVisionDevices,
+          mShooter,
           mLimelight,
           mSuperstructure
         );

@@ -12,6 +12,10 @@ public class Ports {
 	public static final CanDeviceId INTAKE_BOTTOM_ROLLER = new CanDeviceId(14, "Default Name");
 
 	
+	public static final CanDeviceId SHOOTER_TOP = new CanDeviceId(16, "Default Name");
+	public static final CanDeviceId SHOOTER_BOTTOM = new CanDeviceId(17, "Default Name");
+
+
 	public static final CanDeviceId LEDS = new CanDeviceId(21, "Default Name");
 
 	public static final int PIGEON = 13;

@@ -29,6 +29,8 @@ public class Superstructure extends Subsystem {
 
 
     private final IntakeSubsystem mIntakeRollers = IntakeSubsystem.getInstance();
+	private final ShooterSubsystem mShooter = ShooterSubsystem.getInstance();
+	private final CommandSwerveDrivetrain mSwerve = CommandSwerveDrivetrain.getInstance();
 
 
     public void request(Request r) {
@@ -136,5 +138,19 @@ public class Superstructure extends Subsystem {
     public void intakeIdle(){
         request(new SequentialRequest(mIntakeRollers.stateRequest(IntakeSubsystem.State.IDLE)));
     }
+
+	public void shoot(){
+		request(new SequentialRequest(mShooter.openLoopRequest(12.5, false)));
+	}
+
+	public void shootIdle(){
+		request(new SequentialRequest(mShooter.openLoopRequest(0, false)));
+	}
+
+	public void fieldRelative()
+	{
+		mSwerve.runOnce(() -> mSwerve.seedFieldRelative());
+		
+	}
 
 }
