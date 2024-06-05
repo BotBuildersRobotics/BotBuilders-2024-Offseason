@@ -22,15 +22,19 @@ import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
 import frc.robot.commands.IntakeReverseCommand;
+import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShooterIdleCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-  private IntakeSubsystem intake = new IntakeSubsystem();
+  private IntakeSubsystem intake = IntakeSubsystem.getInstance();
+  private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -63,14 +67,11 @@ public class RobotContainer {
 				.whileTrue(new IntakeOnCommand(intake))
 				.whileFalse(new IntakeIdleCommand(intake));
 
-    
-
-    //joystick.leftTrigger().
 
     //reverse intake
-   // joystick.leftTrigger()
-     //   .whileTrue(new IntakeReverseCommand(intake));
-      //  .whileFalse(new IntakeIdleCommand(intake));
+    joystick.leftTrigger()
+        .whileTrue(new IntakeReverseCommand(intake))
+        .whileFalse(new IntakeIdleCommand(intake));
 
     //use the d pad up button to drive the robot forward - just a test
     joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
@@ -78,7 +79,10 @@ public class RobotContainer {
     //b button will activate the limelite april tag lookup.
     joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
+    
+    
+    //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
    /*joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
     */
