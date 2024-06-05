@@ -14,6 +14,7 @@ import com.team10002.frc2024.loops.CrashTracker;
 import com.team10002.frc2024.loops.Looper;
 import com.team10002.frc2024.subsystems.CommandSwerveDrivetrain;
 import com.team10002.frc2024.subsystems.IntakeSubsystem;
+import com.team10002.frc2024.subsystems.ShooterPivot;
 import com.team10002.frc2024.subsystems.ShooterSubsystem;
 import com.team10002.frc2024.subsystems.Superstructure;
 import com.team10002.frc2024.subsystems.limelight.Limelight;
@@ -55,6 +56,7 @@ public class Robot extends TimedRobot {
 	private CommandSwerveDrivetrain mDrive;
   private IntakeSubsystem mIntakeRollers;
   private ShooterSubsystem mShooter;
+  private ShooterPivot mPivot;
 
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -85,6 +87,7 @@ public class Robot extends TimedRobot {
         mIntakeRollers = IntakeSubsystem.getInstance();
         mDrive = CommandSwerveDrivetrain.getInstance();
         mShooter = ShooterSubsystem.getInstance();
+        mPivot = ShooterPivot.getInstance();
 
        /*  mDrive.setDefaultCommand( // Drivetrain will execute this command periodically
         mDrive.applyRequest(() -> drive.withVelocityX(-mControlBoard.driver.getLeftY() * MaxSpeed) // Drive forward with
@@ -104,6 +107,7 @@ public class Robot extends TimedRobot {
           mVisionDevices,
           mShooter,
           mLimelight,
+          mPivot,
           mSuperstructure
         );
         // spotless:on
@@ -129,7 +133,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     
-    //CommandScheduler.getInstance().run(); //L
+    CommandScheduler.getInstance().run(); //L
 
 
 

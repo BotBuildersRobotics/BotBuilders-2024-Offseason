@@ -3,8 +3,10 @@ package com.team10002.frc2024;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team10002.frc2024.subsystems.limelight.GoalTracker;
-
+import com.team10002.frc2024.subsystems.servo.ServoMotorSubsystem.ServoMotorSubsystemConstants;
+import com.team10002.frc2024.subsystems.servo.ServoMotorSubsystem.TalonFXConstants;
 import com.team10002.frc2024.subsystems.vision.VisionDeviceConstants;
+import com.team10002.lib.Conversions;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.math.Matrix;
@@ -95,7 +97,55 @@ public class Constants {
 		}
 	}
 
+	public static final class ShooterPivotConstants{
+			public static final ServoMotorSubsystemConstants kShooterPivotServoConstants = new ServoMotorSubsystemConstants();
 
+		static {
+			kShooterPivotServoConstants.kName = "Pivot";
+
+			kShooterPivotServoConstants.kMainConstants.counterClockwisePositive = false;
+			kShooterPivotServoConstants.kMainConstants.invert_sensor_phase = false;
+
+			kShooterPivotServoConstants.kFollowerConstants = new TalonFXConstants[1];
+			kShooterPivotServoConstants.kFollowerConstants[0] = new TalonFXConstants();
+
+			kShooterPivotServoConstants.kMainConstants.id = Ports.PIVOT_MAIN;
+			kShooterPivotServoConstants.kFollowerConstants[0].id = Ports.PIVOT_FOLLOWER;
+
+			kShooterPivotServoConstants.kHomePosition = 0.0; // meters
+
+			kShooterPivotServoConstants.kMaxUnitsLimit = 0.46;
+			kShooterPivotServoConstants.kMinUnitsLimit = 0.0;
+
+			kShooterPivotServoConstants.kRotationsPerUnitDistance = (9.0) / (Conversions.inchesToMeters(1.432) * Math.PI);
+
+			kShooterPivotServoConstants.kKp = 1.0; // Raw output / raw error
+			kShooterPivotServoConstants.kKi = 0.0; // Raw output / sum of raw error
+			kShooterPivotServoConstants.kKd = 0.0; // Raw output / (err - prevErr)
+			kShooterPivotServoConstants.kKa = 0.0; // Raw output / accel in (rots/s) / s
+			kShooterPivotServoConstants.kKg = 0.2;
+			kShooterPivotServoConstants.kDeadband = 0; // rots
+
+			kShooterPivotServoConstants.kCruiseVelocity = 1.0; // m / s
+			kShooterPivotServoConstants.kAcceleration = 120.0; // m / s^2
+			kShooterPivotServoConstants.kRampRate = 0.0; // s
+
+			kShooterPivotServoConstants.kMaxForwardOutput = 12.0;
+			kShooterPivotServoConstants.kMaxReverseOutput = -12.0;
+
+			kShooterPivotServoConstants.kEnableSupplyCurrentLimit = true;
+			kShooterPivotServoConstants.kSupplyCurrentLimit = 40; // amps
+			kShooterPivotServoConstants.kSupplyCurrentThreshold = 40; // amps
+			kShooterPivotServoConstants.kSupplyCurrentTimeout = 0.01; // seconds
+
+			kShooterPivotServoConstants.kNeutralMode = NeutralModeValue.Brake;
+		}
+
+		public static double kHomingZone = 0.1; // meters
+		public static double kHomingTimeout = 0.5; // seconds
+		public static double kHomingVelocityWindow = 0.1; // "units" / second
+		public static double kHomingOutput = -2.0; // volts
+	}
 
 
 

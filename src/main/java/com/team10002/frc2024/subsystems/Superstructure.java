@@ -9,6 +9,8 @@ import com.team10002.lib.requests.ParallelRequest;
 import com.team10002.lib.requests.Request;
 import com.team10002.lib.requests.SequentialRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class Superstructure extends Subsystem {
     
     private static Superstructure mInstance;
@@ -31,6 +33,7 @@ public class Superstructure extends Subsystem {
     private final IntakeSubsystem mIntakeRollers = IntakeSubsystem.getInstance();
 	private final ShooterSubsystem mShooter = ShooterSubsystem.getInstance();
 	private final CommandSwerveDrivetrain mSwerve = CommandSwerveDrivetrain.getInstance();
+    private final ShooterPivot mPivot = ShooterPivot.getInstance();
 
 
     public void request(Request r) {
@@ -152,5 +155,9 @@ public class Superstructure extends Subsystem {
 		mSwerve.runOnce(() -> mSwerve.seedFieldRelative());
 		
 	}
+
+    public void rotateToAprilTag(){
+       // Pose2d pd = mSwerve.getState().Pose;
+    }
 
 }
