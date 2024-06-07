@@ -16,6 +16,10 @@ public class Ports {
 	public static final CanDeviceId SHOOTER_BOTTOM = new CanDeviceId(17, "Default Name");
 
 
+    public static final CanDeviceId LEADER_PIVOT = new CanDeviceId(19, "Default Name");
+    public static final CanDeviceId FOLLOWER_PIVOT = new CanDeviceId(18, "Default Name");
+
+
 	
 	public static final CanDeviceId PIVOT_MAIN = new CanDeviceId(18, "Default Name");
 	public static final CanDeviceId PIVOT_FOLLOWER = new CanDeviceId(19, "Default Name");

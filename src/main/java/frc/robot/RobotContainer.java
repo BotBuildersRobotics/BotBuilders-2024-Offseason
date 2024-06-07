@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -22,11 +23,13 @@ import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
 import frc.robot.commands.IntakeReverseCommand;
+import frc.robot.commands.PivotCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShooterIdleCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
@@ -35,6 +38,7 @@ public class RobotContainer {
 
   private IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+  private PivotSubsystem pivot = PivotSubsystem.getInstance();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -75,6 +79,26 @@ public class RobotContainer {
 
     //use the d pad up button to drive the robot forward - just a test
     joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+
+    IntSupplier degrees1 = new IntSupplier() {
+     @Override
+     public int getAsInt() {
+         // TODO Auto-generated method stub
+         return 0;
+     }
+    };
+
+    IntSupplier degrees2 = new IntSupplier() {
+     @Override
+     public int getAsInt() {
+         // TODO Auto-generated method stub
+         return 30;
+     }
+    };
+
+    joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
+
+     joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
 
     //b button will activate the limelite april tag lookup.
     joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
