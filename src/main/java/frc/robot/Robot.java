@@ -45,6 +45,9 @@ public class Robot extends LoggedRobot {
 
     
     m_robotContainer = new RobotContainer();
+
+    //Test this out.
+    m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
   }
 
   @Override

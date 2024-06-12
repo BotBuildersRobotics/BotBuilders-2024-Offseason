@@ -54,8 +54,11 @@ public class RobotContainer {
 
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final CommandXboxController driverControl = new CommandXboxController(0); //
+
+  private final CommandXboxController operatorControl = new CommandXboxController(1); //
+
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -74,25 +77,39 @@ public class RobotContainer {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(-driverControl.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            .withVelocityY(-driverControl.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-driverControl.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
     // intake and turn led green    
-    joystick.rightTrigger()
-        .whileTrue(new GreenLEDCommand(lights))
-        .whileFalse(new BlueLEDCommand(lights))
-			  .whileTrue(new IntakeOnCommand(intake))
-				.whileFalse(new IntakeIdleCommand(intake));
+    //joystick.rightTrigger()
+       // .whileTrue(new GreenLEDCommand(lights))
+        //.whileFalse(new BlueLEDCommand(lights))
+			  //.whileTrue(new IntakeOnCommand(intake))
+				//.whileFalse(new IntakeIdleCommand(intake));
+
+    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake));
+
+    driverControl.a().onTrue(
+      new SequentialCommandGroup(
+          new ShootCommand(shooter),
+          new WaitCommand(1),
+          new IntakeFeedCommand(intake),
+          new WaitCommand(1),
+          new ShooterIdleCommand(shooter))
+    );
+    
+     
+    
 
     //reverse intake and turn led red
-    joystick.leftTrigger()
+    /*joystick.leftTrigger()
         .whileTrue(new RedLEDCommand(lights))
         .whileFalse(new BlueLEDCommand(lights))
         .whileTrue(new IntakeReverseCommand(intake))
-        .whileFalse(new IntakeIdleCommand(intake));
+        .whileFalse(new IntakeIdleCommand(intake));*/
 
     //use the d pad up button to drive the robot forward - just a test
     //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
@@ -123,16 +140,7 @@ public class RobotContainer {
    
     //joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
 
-    joystick.a().onTrue(
-      new SequentialCommandGroup(
-          new ShootCommand(shooter),
-          new WaitCommand(1),
-          new IntakeFeedCommand(intake))
-    ).onFalse(
-        new SequentialCommandGroup(     
-          new ShooterIdleCommand(shooter),
-          new IntakeIdleCommand(intake))
-    );
+    
     
     
     //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -140,7 +148,7 @@ public class RobotContainer {
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
     */
     // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    driverControl.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

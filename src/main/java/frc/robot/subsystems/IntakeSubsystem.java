@@ -74,14 +74,19 @@ public class IntakeSubsystem extends SubsystemBase {
     
     if(isBeamBreakTripped())
     {
-        if(currentState == SystemState.INTAKE){
-          LightsSubsystem.getInstance().setState(LightState.GREEN);
-          currentState = SystemState.STAGED;
-        }
+       //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
+       
+        currentState = SystemState.STAGED;
+        
 
+    }
+
+    if(currentState == SystemState.STAGED){
+      LightsSubsystem.getInstance().setState(LightState.GREEN);
     }else{
       LightsSubsystem.getInstance().setState(LightState.BLUE);
     }
+
 
     io.setFrontMotorVoltage(currentState.roller_voltage_rear);
     io.setRearMotorVoltage(currentState.roller_voltage_rear);
