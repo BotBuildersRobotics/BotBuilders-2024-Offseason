@@ -18,10 +18,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.BlueLEDCommand;
 import frc.robot.commands.GreenLEDCommand;
+import frc.robot.commands.IntakeFeedCommand;
 import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
 import frc.robot.commands.IntakeReverseCommand;
@@ -30,6 +33,7 @@ import frc.robot.commands.RedLEDCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShooterIdleCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.OperatorDashboard;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -44,6 +48,10 @@ public class RobotContainer {
   private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   private PivotSubsystem pivot = PivotSubsystem.getInstance();
   private LightsSubsystem lights = LightsSubsystem.getInstance();
+
+
+  private final OperatorDashboard dashboard;
+
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -87,13 +95,13 @@ public class RobotContainer {
         .whileFalse(new IntakeIdleCommand(intake));
 
     //use the d pad up button to drive the robot forward - just a test
-    joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+    //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
 
 
     IntSupplier degrees1 = new IntSupplier() {
      @Override
      public int getAsInt() {
-         // TODO Auto-generated method stub
+        
          return 0;
      }
     };
@@ -101,19 +109,30 @@ public class RobotContainer {
     IntSupplier degrees2 = new IntSupplier() {
      @Override
      public int getAsInt() {
-         // TODO Auto-generated method stub
+        
          return 30;
      }
     };
 
-    joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
+    //joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
 
-     joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
+     //joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
 
     //b button will activate the limelite april tag lookup.
     joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
     joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
+
+    joystick.povDownRight().onTrue(
+      new SequentialCommandGroup(
+          new ShootCommand(shooter),
+          new WaitCommand(1),
+          new IntakeFeedCommand(intake))
+    ).onFalse(
+        new SequentialCommandGroup(     
+          new ShooterIdleCommand(shooter),
+          new IntakeIdleCommand(intake))
+    );
     
     
     //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -130,6 +149,9 @@ public class RobotContainer {
   }
 
   public RobotContainer() {
+
+    dashboard = new OperatorDashboard();
+
     configureBindings();
 
     //NamedCommands.registerCommand("MessageThing", Commands.print("Tests"));

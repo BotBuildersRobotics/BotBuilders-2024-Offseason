@@ -4,60 +4,51 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Ports;
-import frc.robot.lib.TalonFXFactory;
-import frc.robot.lib.TalonUtil;
+import frc.robot.subsystems.LightsSubsystem.LightState;
 
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
 public class IntakeSubsystem extends SubsystemBase {
-
-  private TalonFX frontRoller;
-  private TalonFX rearRoller;
 
 
   public static IntakeSubsystem mInstance;
 
 	public static IntakeSubsystem getInstance() {
 		if (mInstance == null) {
-			mInstance = new IntakeSubsystem();
+			mInstance = new IntakeSubsystem(new IntakeIOPhoenix6());
 		}
 		return mInstance;
 	}
 
+  private IntakeIO io;
+  private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  public IntakeSubsystem() {
+  public IntakeSubsystem(IntakeIO io) {
 
-    frontRoller = TalonFXFactory.createDefaultTalon(Ports.INTAKE_TOP_ROLLER);
-    TalonUtil.applyAndCheckConfiguration(frontRoller, Constants.IntakeConstants.IntakeFXConfig());
-    frontRoller.setInverted(true);
-
-    rearRoller = TalonFXFactory.createDefaultTalon(Ports.INTAKE_BOTTOM_ROLLER);
-    TalonUtil.applyAndCheckConfiguration(rearRoller, Constants.IntakeConstants.IntakeFXConfig());
-    rearRoller.setInverted(false);
-    rearRoller.setNeutralMode(NeutralModeValue.Coast);
+    this.io = io;
 
   }
 
 
   public enum SystemState {
-		IDLE(0.0, 0.0),
-		INTAKE(8.0, 8.0),
-		REVERSE(-6.0, -6.0);
+		IDLE(0.0, 0.0, 0.0),
+		INTAKE(8.0, 8.0, 5),
+		REVERSE(-6.0, -6.0, -5),
+    STAGED(0.0,0.0,0.0),
+    FEEDING(0.0,0.0,12);
 
 		public double roller_voltage_front;
     public double roller_voltage_rear;
+    public double feeder_voltage;
 
-		SystemState(double roller_voltage_front, double roller_voltage_rear) {
+		SystemState(double roller_voltage_front, double roller_voltage_rear, double feeder_voltage) {
 			this.roller_voltage_front = roller_voltage_front;
       this.roller_voltage_rear = roller_voltage_rear;
+      this.feeder_voltage = feeder_voltage;
 		}
 	}
 
@@ -73,26 +64,35 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
    
-    writeOuputs();
+    io.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
 
-  }
+    // Stop moving when disabled
+    if (DriverStation.isDisabled()) {
+        currentState = SystemState.IDLE;
+    }
+    
+    if(isBeamBreakTripped())
+    {
+        if(currentState == SystemState.INTAKE){
+          LightsSubsystem.getInstance().setState(LightState.GREEN);
+          currentState = SystemState.STAGED;
+        }
 
+    }else{
+      LightsSubsystem.getInstance().setState(LightState.BLUE);
+    }
+
+    io.setFrontMotorVoltage(currentState.roller_voltage_rear);
+    io.setRearMotorVoltage(currentState.roller_voltage_rear);
+    io.setFeederMotorVoltage(currentState.feeder_voltage);
     
 
-  public void writeOuputs()
-  {
-      if(currentState == SystemState.IDLE){
-          frontRoller.setControl(new CoastOut());
-          rearRoller.setControl(new CoastOut());
-      }else{
-      
-          frontRoller.setControl(new VoltageOut(currentState.roller_voltage_front));
-          rearRoller.setControl(new VoltageOut(currentState.roller_voltage_rear));
-          
-          
-      }
   }
-   
 
+  /** Returns true if the beam break is tripped */
+  public boolean isBeamBreakTripped() {
+      return inputs.beamBreakTripped;
+  }
     
 }
