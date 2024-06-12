@@ -20,15 +20,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Drive.AprilTagRotationSource;
+import frc.robot.commands.BlueLEDCommand;
+import frc.robot.commands.GreenLEDCommand;
 import frc.robot.commands.IntakeIdleCommand;
 import frc.robot.commands.IntakeOnCommand;
 import frc.robot.commands.IntakeReverseCommand;
 import frc.robot.commands.PivotCommand;
+import frc.robot.commands.RedLEDCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShooterIdleCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -39,6 +43,7 @@ public class RobotContainer {
   private IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   private PivotSubsystem pivot = PivotSubsystem.getInstance();
+  private LightsSubsystem lights = LightsSubsystem.getInstance();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -67,18 +72,23 @@ public class RobotContainer {
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
+    // intake and turn led green    
     joystick.rightTrigger()
-				.whileTrue(new IntakeOnCommand(intake))
+        .whileTrue(new GreenLEDCommand(lights))
+        .whileFalse(new BlueLEDCommand(lights))
+			  .whileTrue(new IntakeOnCommand(intake))
 				.whileFalse(new IntakeIdleCommand(intake));
 
-
-    //reverse intake
+    //reverse intake and turn led red
     joystick.leftTrigger()
+        .whileTrue(new RedLEDCommand(lights))
+        .whileFalse(new BlueLEDCommand(lights))
         .whileTrue(new IntakeReverseCommand(intake))
         .whileFalse(new IntakeIdleCommand(intake));
 
     //use the d pad up button to drive the robot forward - just a test
     joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+
 
     IntSupplier degrees1 = new IntSupplier() {
      @Override
