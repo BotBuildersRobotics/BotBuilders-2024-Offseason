@@ -31,7 +31,7 @@ public class IntakeIOPhoenix6 implements IntakeIO{
 
     frontRoller = TalonFXFactory.createDefaultTalon(Ports.INTAKE_TOP_ROLLER);
     TalonUtil.applyAndCheckConfiguration(frontRoller, Constants.IntakeConstants.IntakeFXConfig());
-    frontRoller.setInverted(true);
+    frontRoller.setInverted(false);
 
     rearRoller = TalonFXFactory.createDefaultTalon(Ports.INTAKE_BOTTOM_ROLLER);
     TalonUtil.applyAndCheckConfiguration(rearRoller, Constants.IntakeConstants.IntakeFXConfig());

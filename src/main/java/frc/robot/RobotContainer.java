@@ -119,11 +119,11 @@ public class RobotContainer {
      //joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
 
     //b button will activate the limelite april tag lookup.
-    joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+    //joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
-    joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
+    //joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
 
-    joystick.povDownRight().onTrue(
+    joystick.a().onTrue(
       new SequentialCommandGroup(
           new ShootCommand(shooter),
           new WaitCommand(1),

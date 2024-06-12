@@ -11,7 +11,7 @@ public class Ports {
 	public static final CanDeviceId INTAKE_TOP_ROLLER = new CanDeviceId(15, "Default Name");
 	public static final CanDeviceId INTAKE_BOTTOM_ROLLER = new CanDeviceId(14, "Default Name");
 
-    public static final CanDeviceId INTAKE_FEEDER_ROLLER = new CanDeviceId(100, "Default Name");
+    public static final CanDeviceId INTAKE_FEEDER_ROLLER = new CanDeviceId(20, "Default Name");
 
 	
 	public static final CanDeviceId SHOOTER_TOP = new CanDeviceId(16, "Default Name");
