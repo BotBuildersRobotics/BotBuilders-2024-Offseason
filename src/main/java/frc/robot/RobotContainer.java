@@ -90,7 +90,8 @@ public class RobotContainer {
 			  //.whileTrue(new IntakeOnCommand(intake))
 				//.whileFalse(new IntakeIdleCommand(intake));
 
-    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake));
+    //driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake));
+    driverControl.rightTrigger().onTrue(new InstantCommand(intake:: startIntake));
 
     driverControl.a().onTrue(
       new SequentialCommandGroup(

@@ -95,6 +95,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   }
 
+  public void startIntake(){
+    this.setWantedState(SystemState.INTAKE);
+  }
+
   /** Returns true if the beam break is tripped */
   public boolean isBeamBreakTripped() {
       return inputs.beamBreakTripped;

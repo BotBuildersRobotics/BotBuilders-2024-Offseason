@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
 import frc.robot.lib.TalonFXFactory;
@@ -45,6 +46,8 @@ public class PivotSubsystem extends SubsystemBase {
     private StatusSignal<Double> closedLoopReferenceSlope;
     double prevClosedLoopReferenceSlope = 0.0;
     double prevReferenceSlopeTimestamp = 0.0;
+
+    private boolean isInitialized = false;
 
 
 	public static PivotSubsystem getInstance() {
@@ -157,6 +160,16 @@ public class PivotSubsystem extends SubsystemBase {
         leader.setPosition(degreesToRotations(newDegrees));
     }
 
+    public Command defaultCommand() {
+        // implicitly require 'this'
+        // return a command that initializes once and then does nothing because the periodic method handles everything
+        return this.run(() -> {
+            if (!isInitialized) {
+               // setWantedState(WantedState.IDLE);
+                isInitialized = true;
+            }
+        });
+    }
 
 
 

@@ -44,7 +44,7 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     feederRoller.setInverted(false);
     feederRoller.setNeutralMode(NeutralModeValue.Coast);
 
-    beamBreakSensor = new DigitalInput(1);
+    beamBreakSensor = new DigitalInput(Ports.INTAKE_BEAMBREAK);
 
   }
 
