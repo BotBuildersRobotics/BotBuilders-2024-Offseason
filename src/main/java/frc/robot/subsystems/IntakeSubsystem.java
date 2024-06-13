@@ -72,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
         currentState = SystemState.IDLE;
     }
     
-    if(isBeamBreakTripped())
+    if(isBeamBreakTripped() && currentState != SystemState.FEEDING)
     {
        //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
        
@@ -83,7 +83,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     if(currentState == SystemState.STAGED){
       LightsSubsystem.getInstance().setState(LightState.GREEN);
-    }else{
+    }
+    else if(currentState == SystemState.FEEDING){
+      LightsSubsystem.getInstance().setState(LightState.RED);
+    }
+    else{
       LightsSubsystem.getInstance().setState(LightState.BLUE);
     }
 
