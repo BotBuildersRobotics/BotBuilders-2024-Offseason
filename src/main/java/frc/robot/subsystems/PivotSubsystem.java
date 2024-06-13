@@ -57,8 +57,8 @@ public class PivotSubsystem extends SubsystemBase {
 
     public PivotSubsystem(){
 
-        leader = TalonFXFactory.createDefaultTalon(Ports.LEADER_PIVOT);
-        follower = TalonFXFactory.createDefaultTalon(Ports.FOLLOWER_PIVOT);
+        leader = TalonFXFactory.createDefaultTalon(Ports.PIVOT_MAIN);
+        follower = TalonFXFactory.createDefaultTalon(Ports.PIVOT_FOLLOWER);
 
         this.leaderConfigurator = leader.getConfigurator();
         this.followerConfigurator = follower.getConfigurator();
@@ -127,7 +127,7 @@ public class PivotSubsystem extends SubsystemBase {
             100, supplyLeft, supplyRight, closedLoopReferenceSlope);
 
 
-        follower.setControl(new Follower(Ports.LEADER_PIVOT.getDeviceNumber(), false));
+        follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), false));
 
     }
     public void setHeight(double degrees) {

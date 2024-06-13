@@ -90,16 +90,19 @@ public class RobotContainer {
 			  //.whileTrue(new IntakeOnCommand(intake))
 				//.whileFalse(new IntakeIdleCommand(intake));
 
-    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake));
+    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake)).onFalse(new IntakeIdleCommand(intake));
 
-    driverControl.a().onTrue(
+   /* driverControl.a().onTrue(
       new SequentialCommandGroup(
           new ShootCommand(shooter),
           new WaitCommand(1),
           new IntakeFeedCommand(intake),
           new WaitCommand(1),
           new ShooterIdleCommand(shooter))
-    );
+    ); */
+
+    driverControl.a().onTrue(new ShootCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
+    driverControl.b().onTrue(new IntakeFeedCommand(intake)).onFalse(new IntakeIdleCommand(intake));
     
      
     
