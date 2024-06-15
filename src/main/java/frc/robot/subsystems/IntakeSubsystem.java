@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.LightsSubsystem.LightState;
+
 
 
 
@@ -34,29 +34,29 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
 
-  public enum SystemState {
+  public enum IntakeSystemState {
 		IDLE(0.0, 0.0, 0.0),
 		INTAKE(8.0, 8.0, 5),
 		REVERSE(-6.0, -6.0, -5),
     STAGED(0.0,0.0,0.0),
-    FEEDING(0.0,0.0,12);
+    FEEDING(6.0,6.0,12);
 
 		public double roller_voltage_front;
     public double roller_voltage_rear;
     public double feeder_voltage;
 
-		SystemState(double roller_voltage_front, double roller_voltage_rear, double feeder_voltage) {
+		IntakeSystemState(double roller_voltage_front, double roller_voltage_rear, double feeder_voltage) {
 			this.roller_voltage_front = roller_voltage_front;
       this.roller_voltage_rear = roller_voltage_rear;
       this.feeder_voltage = feeder_voltage;
 		}
 	}
 
-  private SystemState currentState = SystemState.IDLE;
+  private IntakeSystemState currentState = IntakeSystemState.IDLE;
 
 
 
-  public void setWantedState(SystemState state) {
+  public void setWantedState(IntakeSystemState state) {
         currentState = state;
         
   }
@@ -69,26 +69,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
-        currentState = SystemState.IDLE;
+        currentState = IntakeSystemState.IDLE;
     }
     
-    if(isBeamBreakTripped() && currentState != SystemState.FEEDING)
+    if(isBeamBreakTripped() && currentState != IntakeSystemState.FEEDING)
     {
        //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
        
-        currentState = SystemState.STAGED;
+        currentState = IntakeSystemState.STAGED;
         
 
-    }
-
-    if(currentState == SystemState.STAGED){
-      LightsSubsystem.getInstance().setState(LightState.GREEN);
-    }
-    else if(currentState == SystemState.FEEDING){
-      LightsSubsystem.getInstance().setState(LightState.RED);
-    }
-    else{
-      LightsSubsystem.getInstance().setState(LightState.BLUE);
     }
 
 
@@ -100,7 +90,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void startIntake(){
-    this.setWantedState(SystemState.INTAKE);
+    this.setWantedState(IntakeSystemState.INTAKE);
   }
 
   /** Returns true if the beam break is tripped */

@@ -5,33 +5,21 @@
 package frc.robot;
 
 import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Drive.AprilTagLateralSource;
 import frc.robot.Drive.AprilTagRotationSource;
-import frc.robot.commands.BlueLEDCommand;
-import frc.robot.commands.GreenLEDCommand;
-import frc.robot.commands.IntakeFeedCommand;
-import frc.robot.commands.IntakeIdleCommand;
-import frc.robot.commands.IntakeOnCommand;
-import frc.robot.commands.IntakeReverseCommand;
 import frc.robot.commands.PivotCommand;
-import frc.robot.commands.RedLEDCommand;
-import frc.robot.commands.ShootCommand;
-import frc.robot.commands.ShooterIdleCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.OperatorDashboard;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -39,16 +27,20 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Superstructure.SuperState;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-  private IntakeSubsystem intake = IntakeSubsystem.getInstance();
+  //TODO: Fix
+ // private IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   private PivotSubsystem pivot = PivotSubsystem.getInstance();
   private LightsSubsystem lights = LightsSubsystem.getInstance();
 
+  private Superstructure superstructure = Superstructure.getInstance();
 
   private final OperatorDashboard dashboard;
 
@@ -69,13 +61,19 @@ public class RobotContainer {
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveRequest.RobotCentric rotate = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
  
+  private final SwerveRequest.RobotCentric lateralMovement = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+ 
+
   private final AprilTagRotationSource aprilTagRotation = new AprilTagRotationSource();
+  private final AprilTagLateralSource aprilTagLateral = new AprilTagLateralSource();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
  // private Command autoRun = drivetrain.getAutoPath("Blue1");
 
   private void configureBindings() {
+   
+   
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-driverControl.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
@@ -83,28 +81,44 @@ public class RobotContainer {
             .withRotationalRate(-driverControl.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    // intake and turn led green    
-    //joystick.rightTrigger()
-       // .whileTrue(new GreenLEDCommand(lights))
-        //.whileFalse(new BlueLEDCommand(lights))
-			  //.whileTrue(new IntakeOnCommand(intake))
-				//.whileFalse(new IntakeIdleCommand(intake));
+    //driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake)).onFalse(new IntakeIdleCommand(intake));
 
-    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake)).onFalse(new IntakeIdleCommand(intake));
+    //driverControl.a().onTrue(new ShootCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
 
-   /* driverControl.a().onTrue(
-      new SequentialCommandGroup(
-          new ShootCommand(shooter),
-          new WaitCommand(1),
-          new IntakeFeedCommand(intake),
-          new WaitCommand(1),
-          new ShooterIdleCommand(shooter))
-    ); */
+    driverControl.rightTrigger().onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
 
-    driverControl.a().onTrue(new ShootCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
-    driverControl.b().onTrue(new IntakeFeedCommand(intake)).onFalse(new IntakeIdleCommand(intake));
+
+    driverControl.a().onTrue( superstructure.setWantedSuperStateCommand(SuperState.MANUAL_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+
+
+    driverControl.y().onTrue(superstructure.setWantedSuperStateCommand(SuperState.CONTROLLED_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+
+    driverControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+
+    //.onFalse(
+       // superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+    //);
+
+    //driverControl.b().onTrue(new IntakeFeedCommand(intake)).onFalse(new IntakeIdleCommand(intake));
     
-     
+    //driverControl.x().onTrue(new ShooterAmpCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
+
+    IntSupplier upD = new IntSupplier() {
+      @Override
+      public int getAsInt() {
+          
+          return 20;
+      }
+    };
+
+    driverControl.povUp().onTrue(new PivotCommand(pivot, upD));
+
+    driverControl.povDown().onTrue(new PivotCommand(pivot, new IntSupplier() {
+      @Override
+      public int getAsInt(){
+        return 10;
+      }
+    }));
     
 
     //reverse intake and turn led red
@@ -118,21 +132,6 @@ public class RobotContainer {
     //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
 
 
-    IntSupplier degrees1 = new IntSupplier() {
-     @Override
-     public int getAsInt() {
-        
-         return 0;
-     }
-    };
-
-    IntSupplier degrees2 = new IntSupplier() {
-     @Override
-     public int getAsInt() {
-        
-         return 30;
-     }
-    };
 
     //joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
 
@@ -141,6 +140,13 @@ public class RobotContainer {
     //b button will activate the limelite april tag lookup.
     //joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
+    //driverControl.b().whileTrue(drivetrain.applyRequest(() -> lateralMovement. .withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+   
+//    driverControl.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+
+    //driverControl.povUp().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(0).withVelocityY(aprilTagLateral.getLateral())));
+
+
     //joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
 
     

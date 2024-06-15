@@ -60,8 +60,9 @@ public class PivotSubsystem extends SubsystemBase {
 
     public PivotSubsystem(){
 
-        leader = TalonFXFactory.createDefaultTalon(Ports.PIVOT_MAIN);
-        follower = TalonFXFactory.createDefaultTalon(Ports.PIVOT_FOLLOWER);
+        //TODO: Change to be the real pivot motors
+        leader = TalonFXFactory.createDefaultTalon(Ports.INTAKE_BOTTOM_ROLLER);
+        follower = TalonFXFactory.createDefaultTalon(Ports.INTAKE_FEEDER_ROLLER);
 
         this.leaderConfigurator = leader.getConfigurator();
         this.followerConfigurator = follower.getConfigurator();
@@ -130,7 +131,7 @@ public class PivotSubsystem extends SubsystemBase {
             100, supplyLeft, supplyRight, closedLoopReferenceSlope);
 
 
-        follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), false));
+        follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), true));
 
     }
     public void setHeight(double degrees) {

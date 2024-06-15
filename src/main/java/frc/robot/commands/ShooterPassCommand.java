@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.ShooterSystemState;
 
 
 public class ShooterPassCommand extends Command {
@@ -15,6 +16,6 @@ public class ShooterPassCommand extends Command {
 
     @Override
     public void initialize() {
-        shooterSubSystem.setWantedState(ShooterSubsystem.SystemState.PASS);
+        shooterSubSystem.setWantedState(ShooterSystemState.PASS);
     }
 }

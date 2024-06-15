@@ -1,10 +1,7 @@
 package frc.robot.subsystems;
-
-import javax.sound.sampled.Port;
-
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.StrobeAnimation;
 
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
 
@@ -36,6 +33,10 @@ public class LightsSubsystem extends SubsystemBase {
             led.setLEDs(225, 0, 0);
         }
 
+        if(state == LightState.ORANGE){
+            led.setLEDs(255, 165, 0);
+        }
+
         if(state == LightState.GREEN) {
             led.setLEDs(0, 225, 0);
         }
@@ -46,8 +47,29 @@ public class LightsSubsystem extends SubsystemBase {
 
     }
 
+    public void setStrobeState(LightState state){
+
+        if(state == LightState.RED){
+            led.animate(new StrobeAnimation(255, 0, 0));
+        }
+
+        if(state == LightState.ORANGE){
+            led.animate(new StrobeAnimation(255, 165, 0));
+        }
+
+        if(state == LightState.GREEN) {
+             led.animate(new StrobeAnimation(0, 255, 0));
+        }
+
+        if(state == LightState.BLUE){
+             led.animate(new StrobeAnimation(0, 0, 255));
+        }
+
+    }
+
     public enum LightState {
         RED,
+        ORANGE,
         GREEN,
         BLUE
 

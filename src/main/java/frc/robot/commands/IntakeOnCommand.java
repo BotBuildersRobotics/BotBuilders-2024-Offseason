@@ -2,7 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.SystemState;
+import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
+
 
 
 public class IntakeOnCommand extends Command
@@ -17,6 +18,6 @@ public class IntakeOnCommand extends Command
 
   @Override
   public void initialize() {
-    intakeSubSystem.setWantedState(SystemState.INTAKE);
+    intakeSubSystem.setWantedState(IntakeSystemState.INTAKE);
   }
 }
