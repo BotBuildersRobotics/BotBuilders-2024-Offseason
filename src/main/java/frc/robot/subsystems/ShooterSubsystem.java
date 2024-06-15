@@ -23,7 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public enum SystemState {
         IDLE(0.0, 0.0,0,0),
-        SHOOT(8.0, 8.0,0,0),
+        SHOOT(12.0, 12.0,0,0),
         AMP(8.0, 8.0,0,0),
         PASS(8.0, 8.0,0,0),
         REVERSE(-6.0, -6.0,0,0);

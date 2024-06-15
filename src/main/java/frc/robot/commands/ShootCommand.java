@@ -17,5 +17,7 @@ public class ShootCommand extends Command {
     public void initialize() {
         shooterSubSystem.setWantedState(ShooterSubsystem.SystemState.SHOOT);
     }
+
+   
     
 }

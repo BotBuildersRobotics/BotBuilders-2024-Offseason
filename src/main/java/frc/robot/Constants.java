@@ -106,6 +106,10 @@ public class Constants {
 			config.CurrentLimits.SupplyCurrentLimitEnable = true;
 			config.CurrentLimits.SupplyTimeThreshold = 0.5;
 
+			config.Slot0.kP = 2.4; // An error of 1 rotation results in 2.4 V output
+    		config.Slot0.kI = 0; // No output for integrated error
+    		config.Slot0.kD = 0.1; // A velocity of 1 rps results in 0.1 V output
+
 			config.CurrentLimits.StatorCurrentLimitEnable = true;
 			config.CurrentLimits.StatorCurrentLimit = 80;
 

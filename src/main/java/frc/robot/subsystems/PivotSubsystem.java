@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -36,6 +37,7 @@ public class PivotSubsystem extends SubsystemBase {
     private final CurrentLimitsConfigs currentLimitsConfigs;
     private final MotorOutputConfigs leaderMotorConfigs;
     private final MotorOutputConfigs followerMotorConfigs;
+    private final SoftwareLimitSwitchConfigs softwareLimitSwitchConfigs;
     private final Slot0Configs slot0Configs;
     private final MotionMagicConfigs motionMagicConfigs;
     private double setpoint;
@@ -69,15 +71,22 @@ public class PivotSubsystem extends SubsystemBase {
         /* Create configs */
         currentLimitsConfigs = new CurrentLimitsConfigs();
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 100.0;
-        currentLimitsConfigs.SupplyCurrentLimit = 100.0;
+        currentLimitsConfigs.StatorCurrentLimit = 40.0;
+        currentLimitsConfigs.SupplyCurrentLimit = 40.0;
         currentLimitsConfigs.SupplyTimeThreshold = 1.5;
 
         leaderMotorConfigs = new MotorOutputConfigs();
-        leaderMotorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        leaderMotorConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
         leaderMotorConfigs.PeakForwardDutyCycle = 1.0;
         leaderMotorConfigs.PeakReverseDutyCycle = -1.0;
         leaderMotorConfigs.NeutralMode = NeutralModeValue.Brake;
+
+        softwareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs();
+        softwareLimitSwitchConfigs.ReverseSoftLimitEnable = true;
+        softwareLimitSwitchConfigs.ReverseSoftLimitThreshold = 0;
+        softwareLimitSwitchConfigs.ForwardSoftLimitEnable = true;
+        softwareLimitSwitchConfigs.ForwardSoftLimitThreshold = (6.6 * (40 / 4));
+        
 
         followerMotorConfigs = new MotorOutputConfigs();
         followerMotorConfigs.PeakForwardDutyCycle = 1.0;
@@ -93,8 +102,8 @@ public class PivotSubsystem extends SubsystemBase {
         slot0Configs.kV = 0.12;
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration =400;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 400;
+        motionMagicConfigs.MotionMagicAcceleration = 72;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 72;
         motionMagicConfigs.MotionMagicJerk = 0;
 
 
@@ -114,6 +123,7 @@ public class PivotSubsystem extends SubsystemBase {
         leaderConfigurator.apply(motionMagicConfigs);
         leaderConfigurator.apply(openLoopRampsConfigs);
         leaderConfigurator.apply(closedLoopRampsConfigs);
+        leaderConfigurator.apply(softwareLimitSwitchConfigs);
 
         followerConfigurator.apply(currentLimitsConfigs);
         followerConfigurator.apply(leaderMotorConfigs);
@@ -121,6 +131,7 @@ public class PivotSubsystem extends SubsystemBase {
         followerConfigurator.apply(motionMagicConfigs);
         followerConfigurator.apply(openLoopRampsConfigs);
         followerConfigurator.apply(closedLoopRampsConfigs);
+        followerConfigurator.apply(softwareLimitSwitchConfigs);
 
         supplyLeft = leader.getSupplyCurrent();
         supplyRight = follower.getSupplyCurrent();
@@ -130,11 +141,12 @@ public class PivotSubsystem extends SubsystemBase {
             100, supplyLeft, supplyRight, closedLoopReferenceSlope);
 
 
-        follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), false));
+        follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), true));
 
     }
     public void setHeight(double degrees) {
         //turn off
+       
         if (!DriverStation.isEnabled()) {
             leader.setControl(new VoltageOut(0.0));
         return;
@@ -153,7 +165,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     private double degreesToRotations(double degrees) {
-        return 6.6 * degrees;
+        return 6.6 * (degrees / 4); //teeth per movement.
     }
 
     public void resetHeight(double newDegrees) {

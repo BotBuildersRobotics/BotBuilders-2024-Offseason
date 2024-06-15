@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -17,7 +18,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -39,6 +42,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.SystemState;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -76,35 +80,71 @@ public class RobotContainer {
  // private Command autoRun = drivetrain.getAutoPath("Blue1");
 
   private void configureBindings() {
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+    
+    /*drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-driverControl.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-driverControl.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-driverControl.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+        ));*/
 
-    // intake and turn led green    
-    //joystick.rightTrigger()
-       // .whileTrue(new GreenLEDCommand(lights))
-        //.whileFalse(new BlueLEDCommand(lights))
-			  //.whileTrue(new IntakeOnCommand(intake))
-				//.whileFalse(new IntakeIdleCommand(intake));
+   
+    /*driverControl.rightTrigger().onTrue(
+        
+          
+          new ConditionalCommand(
+            new SequentialCommandGroup(
+              new InstantCommand( () -> intake.SetRotations(25)),
+              new WaitCommand(1),
+              new InstantCommand( () -> intake.SetRotations(-10))
+            ),
+          new SequentialCommandGroup(
+          new InstantCommand( ()-> pivot.setHeight(40)),
+          new IntakeOnCommand(intake)),
+          new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                
+                return intake.getCurrenState() == SystemState.STAGED;
+            }
+            }
+          )
+    ).onFalse(new IntakeIdleCommand(intake));*/
 
-    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake)).onFalse(new IntakeIdleCommand(intake));
+    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake))
+    .onFalse(new IntakeIdleCommand(intake));
 
-   /* driverControl.a().onTrue(
-      new SequentialCommandGroup(
-          new ShootCommand(shooter),
+     driverControl.x().onTrue(
+        new SequentialCommandGroup(
+          new InstantCommand( ()-> pivot.setHeight(35)),
+          new InstantCommand( () -> intake.SetRotations(5)),
           new WaitCommand(1),
-          new IntakeFeedCommand(intake),
+          new InstantCommand( () -> intake.SetRotations(-15)),
           new WaitCommand(1),
-          new ShooterIdleCommand(shooter))
-    ); */
+          new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
 
-    driverControl.a().onTrue(new ShootCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
-    driverControl.b().onTrue(new IntakeFeedCommand(intake)).onFalse(new IntakeIdleCommand(intake));
-    
+        )).onFalse(new InstantCommand(() -> intake.RunCounterSlow(0)));
      
+     driverControl.a().onTrue(
+          new SequentialCommandGroup(
+                      //new ShootCommand(shooter),
+                      new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.SHOOT)),
+                      new WaitCommand(1.50),
+                      new InstantCommand( () -> intake.setWantedState(SystemState.FEEDING))
+          )
+      ).onFalse(
+        new SequentialCommandGroup(
+          //new ShooterIdleCommand(shooter),
+           new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.IDLE)),
+          new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
+        )
+      );
+     
+     /*driverControl.y().onTrue(new InstantCommand( ()-> intake.setWantedState(SystemState.FEEDING))).onFalse(new InstantCommand( ()-> intake.setWantedState(SystemState.IDLE)));*/
+
+     //driverControl.a().onTrue(new InstantCommand( ()-> pivot.setHeight(40)));
+
+     driverControl.b().onTrue(new InstantCommand( ()-> pivot.setHeight(0)));
     
 
     //reverse intake and turn led red
@@ -118,25 +158,11 @@ public class RobotContainer {
     //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
 
 
-    IntSupplier degrees1 = new IntSupplier() {
-     @Override
-     public int getAsInt() {
-        
-         return 0;
-     }
-    };
+   
 
-    IntSupplier degrees2 = new IntSupplier() {
-     @Override
-     public int getAsInt() {
-        
-         return 30;
-     }
-    };
+   // driverControl.x().whileTrue(new PivotCommand(pivot, degrees1));
 
-    //joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
-
-     //joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
+    //driverControl.y().whileTrue(new PivotCommand(pivot, degrees2));
 
     //b button will activate the limelite april tag lookup.
     //joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
@@ -162,6 +188,8 @@ public class RobotContainer {
   public RobotContainer() {
 
     dashboard = new OperatorDashboard();
+
+
 
     configureBindings();
 

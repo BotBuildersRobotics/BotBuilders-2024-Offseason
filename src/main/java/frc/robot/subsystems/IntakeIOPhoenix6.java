@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -23,9 +26,9 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     private final VoltageOut frontRequest = new VoltageOut(0.0, true, false, false, false);
     private final VoltageOut rearRequest = new VoltageOut(0.0, true, false, false, false);
 
-     private final VoltageOut feederRequest = new VoltageOut(0.0, true, false, false, false);
+    private final VoltageOut feederRequest = new VoltageOut(0.0, true, false, false, false);
 
-
+    private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
 
     public IntakeIOPhoenix6() {
 
@@ -43,6 +46,13 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     TalonUtil.applyAndCheckConfiguration(feederRoller, Constants.IntakeConstants.IntakeFXConfig());
     feederRoller.setInverted(false);
     feederRoller.setNeutralMode(NeutralModeValue.Coast);
+
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    motionMagicConfigs.MotionMagicAcceleration =48;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 48;
+    motionMagicConfigs.MotionMagicJerk = 0;
+
+    feederRoller.getConfigurator().apply(motionMagicConfigs);
 
     beamBreakSensor = new DigitalInput(Ports.INTAKE_BEAMBREAK);
 
@@ -67,6 +77,19 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.beamBreakTripped = !beamBreakSensor.get();
+    }
+
+    @Override
+    public void MoveRotations(int rotations){
+       // feederRoller.setPosition(0);
+        //feederRoller.setControl(m_positionVoltage.withPosition(rotations));
+       
+         feederRoller.setControl(new MotionMagicVoltage(rotations));
+    }
+
+    @Override
+    public void RunCounterSlow(int voltage){
+         feederRoller.setControl(feederRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
     }
 
 }
