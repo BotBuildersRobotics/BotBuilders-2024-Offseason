@@ -80,16 +80,19 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     }
 
     @Override
-    public void MoveRotations(int rotations){
-       // feederRoller.setPosition(0);
-        //feederRoller.setControl(m_positionVoltage.withPosition(rotations));
+    public void MoveFeederRotations(int rotations){
        
          feederRoller.setControl(new MotionMagicVoltage(rotations));
     }
 
     @Override
-    public void RunCounterSlow(int voltage){
+    public void RunFeederVoltage(int voltage){
          feederRoller.setControl(feederRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
+    }
+
+    @Override
+    public void RunCounterVoltage(int voltage){
+        rearRoller.setControl(rearRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
     }
 
 }

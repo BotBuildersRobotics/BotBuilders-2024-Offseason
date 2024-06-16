@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
@@ -153,7 +154,7 @@ public class PivotSubsystem extends SubsystemBase {
         }
 
         setpoint = degrees;
-        leader.setControl(new MotionMagicVoltage(degreesToRotations(degrees)));
+        leader.setControl(new MotionMagicVoltage(degreesToRotations(setpoint)));
     }
 
     public void enableBrakeMode(boolean enable) {
@@ -172,6 +173,11 @@ public class PivotSubsystem extends SubsystemBase {
         leader.setPosition(degreesToRotations(newDegrees));
     }
 
+    public void incrementHeight(double height){
+        setpoint += height;
+        leader.setControl(new MotionMagicVoltage(degreesToRotations(setpoint)));
+    }
+
     public Command defaultCommand() {
         // implicitly require 'this'
         // return a command that initializes once and then does nothing because the periodic method handles everything
@@ -181,6 +187,12 @@ public class PivotSubsystem extends SubsystemBase {
                 isInitialized = true;
             }
         });
+    }
+
+    @Override
+    public void periodic(){
+        
+        SmartDashboard.putNumber("Pivot Value", setpoint);
     }
 
 

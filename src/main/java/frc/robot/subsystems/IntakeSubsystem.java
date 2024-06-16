@@ -114,13 +114,17 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   
-  public void SetRotations(int rotations){
+  public void SetFeederRotations(int rotations){
     this.setWantedState(SystemState.SHUFFLE);
-    io.MoveRotations(rotations);
+    io.MoveFeederRotations(rotations);
   }
 
-  public void RunCounterSlow(int voltage){
-    io.RunCounterSlow(voltage);
+  public void RunFeederVoltage(int voltage){
+    io.RunFeederVoltage(voltage);
+  }
+
+  public void RunCounterVoltage(int voltage){
+    io.RunCounterVoltage(voltage);
   }
 
   public SystemState getCurrenState(){

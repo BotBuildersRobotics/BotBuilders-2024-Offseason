@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.BlueLEDCommand;
+import frc.robot.commands.ControllerRumbleCommand;
 import frc.robot.commands.GreenLEDCommand;
 import frc.robot.commands.IntakeFeedCommand;
 import frc.robot.commands.IntakeIdleCommand;
@@ -89,27 +90,7 @@ public class RobotContainer {
         ));*/
 
    
-    /*driverControl.rightTrigger().onTrue(
-        
-          
-          new ConditionalCommand(
-            new SequentialCommandGroup(
-              new InstantCommand( () -> intake.SetRotations(25)),
-              new WaitCommand(1),
-              new InstantCommand( () -> intake.SetRotations(-10))
-            ),
-          new SequentialCommandGroup(
-          new InstantCommand( ()-> pivot.setHeight(40)),
-          new IntakeOnCommand(intake)),
-          new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                
-                return intake.getCurrenState() == SystemState.STAGED;
-            }
-            }
-          )
-    ).onFalse(new IntakeIdleCommand(intake));*/
+   
 
     driverControl.rightTrigger().onTrue(
     
@@ -117,18 +98,42 @@ public class RobotContainer {
           new InstantCommand( ()-> pivot.setHeight(40)),
           new IntakeOnCommand(intake))
     )
-    .onFalse(new IntakeIdleCommand(intake));
+    .onFalse(new IntakeIdleCommand(intake))
+    .whileTrue(
+      new WaitCommand(0.2)
+                        .andThen(
+                          new ControllerRumbleCommand(
+                                driverControl, 
+                                new BooleanSupplier() {
+                                  @Override
+                                  public boolean getAsBoolean() {
+                                      
+                                      return intake.getCurrenState() == SystemState.STAGED;
+                                  }
+                                })
+                              ).andThen(
+                                new ControllerRumbleCommand(
+                                operatorControl, 
+                                new BooleanSupplier() {
+                                  @Override
+                                  public boolean getAsBoolean() {
+                                      
+                                      return intake.getCurrenState() == SystemState.STAGED;
+                                  }
+                                })
+                              ));
+                
 
      driverControl.x().onTrue(
         new SequentialCommandGroup(
           new InstantCommand( ()-> pivot.setHeight(35)),
-          new InstantCommand( () -> intake.SetRotations(5)),
+          new InstantCommand( () -> intake.SetFeederRotations(5)),
           new WaitCommand(1),
-          new InstantCommand( () -> intake.SetRotations(-15)),
+          new InstantCommand( () -> intake.SetFeederRotations(-15)),
           new WaitCommand(1),
           new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
 
-        )).onFalse(new InstantCommand(() -> intake.RunCounterSlow(0)));
+        )).onFalse(new InstantCommand(() -> intake.RunFeederVoltage(0)));
      
      driverControl.a().onTrue(
           new SequentialCommandGroup(
@@ -147,10 +152,18 @@ public class RobotContainer {
      
      /*driverControl.y().onTrue(new InstantCommand( ()-> intake.setWantedState(SystemState.FEEDING))).onFalse(new InstantCommand( ()-> intake.setWantedState(SystemState.IDLE)));*/
 
-     //driverControl.a().onTrue(new InstantCommand( ()-> pivot.setHeight(40)));
 
      driverControl.b().onTrue(new InstantCommand( ()-> pivot.setHeight(0)));
-    
+
+     driverControl.povUp().onTrue(
+            new InstantCommand(() -> pivot.incrementHeight(5))
+
+     );
+
+     driverControl.povDown().onTrue(
+            new InstantCommand(() -> pivot.incrementHeight(-5))
+
+     );
 
     //reverse intake and turn led red
     /*joystick.leftTrigger()
@@ -163,14 +176,9 @@ public class RobotContainer {
     //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
 
 
-   
-
-   // driverControl.x().whileTrue(new PivotCommand(pivot, degrees1));
-
-    //driverControl.y().whileTrue(new PivotCommand(pivot, degrees2));
 
     //b button will activate the limelite april tag lookup.
-    //joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+    driverControl.rightBumper().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
     //joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
 
