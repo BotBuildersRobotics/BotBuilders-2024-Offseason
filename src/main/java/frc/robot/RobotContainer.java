@@ -111,7 +111,12 @@ public class RobotContainer {
           )
     ).onFalse(new IntakeIdleCommand(intake));*/
 
-    driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake))
+    driverControl.rightTrigger().onTrue(
+    
+    new SequentialCommandGroup(
+          new InstantCommand( ()-> pivot.setHeight(40)),
+          new IntakeOnCommand(intake))
+    )
     .onFalse(new IntakeIdleCommand(intake));
 
      driverControl.x().onTrue(
