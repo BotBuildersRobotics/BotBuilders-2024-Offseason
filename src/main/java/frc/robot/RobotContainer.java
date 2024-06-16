@@ -82,20 +82,20 @@ public class RobotContainer {
 
   private void configureBindings() {
     
-    /*drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-driverControl.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-driverControl.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-driverControl.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));*/
+        ));
 
    
    
 
-    driverControl.rightTrigger().onTrue(
+    operatorControl.rightTrigger().onTrue(
     
     new SequentialCommandGroup(
-          new InstantCommand( ()-> pivot.setHeight(40)),
+          new InstantCommand( ()-> pivot.setHeight(44)),
           new IntakeOnCommand(intake))
     )
     .onFalse(new IntakeIdleCommand(intake))
@@ -129,17 +129,58 @@ public class RobotContainer {
           new InstantCommand( ()-> pivot.setHeight(35)),
           new InstantCommand( () -> intake.SetFeederRotations(5)),
           new WaitCommand(1),
-          new InstantCommand( () -> intake.SetFeederRotations(-15)),
+          new InstantCommand( () -> intake.SetFeederRotations(-5)),
+          new WaitCommand(1),
+          new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
+
+        )).onFalse(new InstantCommand(() -> intake.RunFeederVoltage(0)));
+
+    /*operatorControl.x().onTrue(
+        new SequentialCommandGroup(
+          new InstantCommand( ()-> pivot.setHeight(25)),
+          new WaitCommand(1),
+          new InstantCommand( ()-> pivot.setHeight(30)),
+          new InstantCommand( () -> intake.SetFeederRotations(5)),
+          new WaitCommand(1),
+          new InstantCommand( () -> intake.SetFeederRotations(-5)),
+          new WaitCommand(1),
+          new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
+
+        )).onFalse(new InstantCommand(() -> intake.RunFeederVoltage(0)));*/
+
+      operatorControl.x().onTrue(
+        new SequentialCommandGroup(
+          new InstantCommand( ()-> pivot.setHeight(30)),
+          new WaitCommand(1),
+          new InstantCommand( ()-> pivot.setHeight(35)),
+          new InstantCommand( () -> intake.SetFeederRotations(5)),
+          new WaitCommand(1),
+          new InstantCommand( () -> intake.SetFeederRotations(-5)),
           new WaitCommand(1),
           new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
 
         )).onFalse(new InstantCommand(() -> intake.RunFeederVoltage(0)));
      
-     driverControl.a().onTrue(
+      operatorControl.b().onTrue(
           new SequentialCommandGroup(
                       //new ShootCommand(shooter),
                       new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.SHOOT)),
-                      new WaitCommand(1.50),
+                      new WaitCommand(5.0),
+                      new InstantCommand( () -> intake.setWantedState(SystemState.FEEDING))
+          )
+      ).onFalse(
+        new SequentialCommandGroup(
+          //new ShooterIdleCommand(shooter),
+           new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.IDLE)),
+          new InstantCommand( () -> intake.setWantedState(SystemState.IDLE))
+        )
+      );
+
+      operatorControl.a().onTrue(
+          new SequentialCommandGroup(
+                      //new ShootCommand(shooter),
+                      new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.AMP)),
+                      new WaitCommand(0.8),
                       new InstantCommand( () -> intake.setWantedState(SystemState.FEEDING))
           )
       ).onFalse(
@@ -153,15 +194,15 @@ public class RobotContainer {
      /*driverControl.y().onTrue(new InstantCommand( ()-> intake.setWantedState(SystemState.FEEDING))).onFalse(new InstantCommand( ()-> intake.setWantedState(SystemState.IDLE)));*/
 
 
-     driverControl.b().onTrue(new InstantCommand( ()-> pivot.setHeight(0)));
+     operatorControl.leftBumper().onTrue(new InstantCommand( ()-> pivot.setHeight(0)));
 
-     driverControl.povUp().onTrue(
-            new InstantCommand(() -> pivot.incrementHeight(5))
+     operatorControl.povUp().onTrue(
+            new InstantCommand(() -> pivot.incrementHeight(2))
 
      );
 
-     driverControl.povDown().onTrue(
-            new InstantCommand(() -> pivot.incrementHeight(-5))
+     operatorControl.povDown().onTrue(
+            new InstantCommand(() -> pivot.incrementHeight(-2))
 
      );
 

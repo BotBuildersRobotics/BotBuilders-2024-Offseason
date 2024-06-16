@@ -86,7 +86,7 @@ public class PivotSubsystem extends SubsystemBase {
         softwareLimitSwitchConfigs.ReverseSoftLimitEnable = true;
         softwareLimitSwitchConfigs.ReverseSoftLimitThreshold = 0;
         softwareLimitSwitchConfigs.ForwardSoftLimitEnable = true;
-        softwareLimitSwitchConfigs.ForwardSoftLimitThreshold = (6.6 * (40 / 4));
+        softwareLimitSwitchConfigs.ForwardSoftLimitThreshold = (6.6 * (44 / 4));
         
 
         followerMotorConfigs = new MotorOutputConfigs();
@@ -103,8 +103,8 @@ public class PivotSubsystem extends SubsystemBase {
         slot0Configs.kV = 0.12;
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration = 72;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 72;
+        motionMagicConfigs.MotionMagicAcceleration = 100;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 100;
         motionMagicConfigs.MotionMagicJerk = 0;
 
 

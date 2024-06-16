@@ -21,9 +21,9 @@ public class ShooterIOPhoenix6 implements ShooterIO {
     private final VoltageOut bottomRequest = new VoltageOut(0.0, true, false, false, false);
 
      private final VelocityVoltage leftShooterVelocityControl =
-            new VelocityVoltage(0, 0, true, 0, SLOT, false, false, false);
+            new VelocityVoltage(0, 0, false, 0, SLOT, false, false, false);
     private final VelocityVoltage rightShooterVelocityControl =
-            new VelocityVoltage(0, 0, true, 0, SLOT, false, false, false);
+            new VelocityVoltage(0, 0, false, 0, SLOT, false, false, false);
 
     public ShooterIOPhoenix6()
     {

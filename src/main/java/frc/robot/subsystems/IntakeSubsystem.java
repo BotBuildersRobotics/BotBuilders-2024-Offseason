@@ -39,7 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		INTAKE(8.0, 8.0, 5),
 		REVERSE(-6.0, -6.0, -5),
     STAGED(0.0,0.0,0.0),
-    FEEDING(0.0,0.0,12),
+    FEEDING(12.0,12.0,12),
     SHUFFLE(0,0,0);
 
 		public double roller_voltage_front;
@@ -113,7 +113,7 @@ public class IntakeSubsystem extends SubsystemBase {
       return inputs.beamBreakTripped;
   }
 
-  
+
   public void SetFeederRotations(int rotations){
     this.setWantedState(SystemState.SHUFFLE);
     io.MoveFeederRotations(rotations);
