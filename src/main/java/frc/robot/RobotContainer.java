@@ -165,8 +165,10 @@ public class RobotContainer {
           new SequentialCommandGroup(
                       //new ShootCommand(shooter),
                       new InstantCommand(() -> shooter.setWantedState(frc.robot.subsystems.ShooterSubsystem.SystemState.SHOOT)),
-                      new WaitCommand(5.0),
-                      new InstantCommand( () -> intake.setWantedState(SystemState.FEEDING))
+                      new WaitCommand(2.0),
+                      new InstantCommand( () -> intake.setWantedState(SystemState.FEEDING)),
+                      new WaitCommand(1),
+                      new InstantCommand( ()-> pivot.setHeight(0))
           )
       ).onFalse(
         new SequentialCommandGroup(

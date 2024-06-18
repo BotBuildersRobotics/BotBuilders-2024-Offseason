@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Ports;
 import frc.robot.lib.TalonFXFactory;
@@ -62,6 +63,8 @@ public class ShooterIOPhoenix6 implements ShooterIO {
         inputs.bottomCurrent = mBottomFX.getSupplyCurrent().getValueAsDouble();
         inputs.bottomTemperature = mBottomFX.getDeviceTemp().getValueAsDouble();
         inputs.bottomVelocityRPS = mBottomFX.getVelocity().getValueAsDouble();
+
+        SmartDashboard.putNumber("Top V RSP", inputs.topVelocityRPS );
     }
 
     @Override
@@ -79,8 +82,11 @@ public class ShooterIOPhoenix6 implements ShooterIO {
     @Override
     public void setRPM(double topTargetRPM, double bottomTargetRPM) {
 
-        double topApplied = topTargetRPM * SHOOTER_GEAR_RATIO / 60.0;
-        double bottomApplied = bottomTargetRPM * SHOOTER_GEAR_RATIO / 60.0;
+        double topApplied = topTargetRPM ;//* SHOOTER_GEAR_RATIO / 60.0;
+        double bottomApplied = bottomTargetRPM;// * SHOOTER_GEAR_RATIO / 60.0;
+
+        SmartDashboard.putNumber("Top A", topApplied);
+        SmartDashboard.putNumber("Bottom A", bottomApplied);
 
         mTopFX.setControl(leftShooterVelocityControl.withVelocity(topApplied));
         mBottomFX.setControl(rightShooterVelocityControl.withVelocity(bottomApplied));

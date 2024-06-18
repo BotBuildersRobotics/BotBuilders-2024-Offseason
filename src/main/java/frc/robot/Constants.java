@@ -44,30 +44,25 @@ public class Constants {
 	public static final int kCANTimeoutMs = 10;
 
 	public static final class ShooterConstants{
-		public static final double kCompGearRatio = 1.6;
-		public static final double kEpsilonTopGearRatio = 1.6;
-		public static final double kEpsilonBottomGearRatio = 1.6;
-		public static final double kTopFlywheelVelocityConversion =
-				(60.0) * (isEpsilon ? kEpsilonTopGearRatio : kCompGearRatio) / (1.0);
-		public static final double kBottomFlywheelVelocityConversion =
-				(60.0) * (isEpsilon ? kEpsilonBottomGearRatio : kCompGearRatio) / (1.0);
-		public static final double kFlywheelTolerance = 1000;
-
+		
 		public static TalonFXConfiguration ShooterFXConfig() {
 			TalonFXConfiguration config = new TalonFXConfiguration();
 
-			config.Slot0.kP = 0.0;
+			/*config.Slot0.kP = 0.0;
 			config.Slot0.kI = 0.0;
 			config.Slot0.kD = 0.0;
 			config.Slot0.kV = 12.0 / (100.0);
-			config.Slot0.kS = 0.15;
+			config.Slot0.kS = 0.15;*/
 
-			config.CurrentLimits.SupplyCurrentLimit = 20.0;
+			config.CurrentLimits.SupplyCurrentLimit = 40.0;
 			config.CurrentLimits.SupplyCurrentLimitEnable = true;
 			config.CurrentLimits.SupplyTimeThreshold = 0.5;
 
 			config.CurrentLimits.StatorCurrentLimitEnable = true;
 			config.CurrentLimits.StatorCurrentLimit = 80;
+
+			config.Voltage.PeakForwardVoltage = 12.0;
+			config.Voltage.PeakReverseVoltage = -12.0;
 
 			config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 			return config;

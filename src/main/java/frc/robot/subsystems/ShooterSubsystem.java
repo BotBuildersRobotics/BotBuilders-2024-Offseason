@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -23,7 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public enum SystemState {
         IDLE(0.0, 0.0,0,0),
-        SHOOT(12.0, 12.0,0,0),
+        SHOOT(12.0, 12.0,10000,10000),
         AMP(4.0, 8.0,0,0),
         PASS(8.0, 8.0,0,0),
         REVERSE(-6.0, -6.0,0,0);
@@ -76,14 +77,18 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
         // write outputs
-        if(currentState == SystemState.AMP && currentState.rpm_top != 0){
+       // if(currentState == SystemState.AMP && currentState.rpm_top != 0){
 
             io.setRPM(currentState.rpm_top, currentState.rpm_bottom);
 
-        }else{
+       
+            SmartDashboard.putNumber("Voltage Top",currentState.voltage_top);
+            
+            SmartDashboard.putNumber("Voltage Bottom",currentState.voltage_bottom);
+
             io.setBottomMotorVoltage(currentState.voltage_bottom);
             io.setTopMotorVoltage(currentState.voltage_top);
-        }
+        
 
     }
 

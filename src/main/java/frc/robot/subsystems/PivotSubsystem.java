@@ -86,7 +86,7 @@ public class PivotSubsystem extends SubsystemBase {
         softwareLimitSwitchConfigs.ReverseSoftLimitEnable = true;
         softwareLimitSwitchConfigs.ReverseSoftLimitThreshold = 0;
         softwareLimitSwitchConfigs.ForwardSoftLimitEnable = true;
-        softwareLimitSwitchConfigs.ForwardSoftLimitThreshold = (6.6 * (44 / 4));
+        softwareLimitSwitchConfigs.ForwardSoftLimitThreshold = (6.6 * (42 / 4));
         
 
         followerMotorConfigs = new MotorOutputConfigs();
