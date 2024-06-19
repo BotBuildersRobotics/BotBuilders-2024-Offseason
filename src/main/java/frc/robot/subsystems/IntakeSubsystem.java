@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -55,10 +56,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private IntakeSystemState currentState = IntakeSystemState.IDLE;
 
+  public IntakeSystemState getCurrentState(){
+    return currentState;
+  }
 
 
   public void setWantedState(IntakeSystemState state) {
-        currentState = state;
+
+        if(state == IntakeSystemState.INTAKE && 
+        (currentState == IntakeSystemState.SHUFFLE || currentState == IntakeSystemState.STAGED))
+        {
+            //don't update the state
+        }else{
+          currentState = state;
+        }
         
   }
 
@@ -66,6 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
    
     io.updateInputs(inputs);
+    SmartDashboard.putString("Intake State",currentState.toString());
     Logger.processInputs("Intake", inputs);
 
     // Stop moving when disabled
@@ -73,7 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
         currentState = IntakeSystemState.IDLE;
     }
     
-    if(isBeamBreakTripped() && currentState != IntakeSystemState.FEEDING)
+    if(isBeamBreakTripped() && (currentState != IntakeSystemState.FEEDING && currentState != IntakeSystemState.SHUFFLE))
     {
        //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
        
@@ -82,7 +94,14 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 
-    if(currentState != IntakeSystemState.SHUFFLE){
+    if(currentState == IntakeSystemState.SHUFFLE || currentState == IntakeSystemState.STAGED)
+    {
+        io.setFrontMotorVoltage(0);
+        io.setRearMotorVoltage(0);
+        io.setFeederMotorVoltage(0);
+    }
+    else
+    {
       io.setFrontMotorVoltage(currentState.roller_voltage_rear);
       io.setRearMotorVoltage(currentState.roller_voltage_rear);
       io.setFeederMotorVoltage(currentState.feeder_voltage);
@@ -101,6 +120,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void SetFeederRotations(int rotations){
+    
     this.setWantedState(IntakeSystemState.SHUFFLE);
     io.MoveFeederRotations(rotations);
   }
@@ -111,6 +131,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void RunCounterVoltage(int voltage){
     io.RunCounterVoltage(voltage);
+  }
+
+  public void RunFrontRollerVoltage(int voltage){
+    io.RunFrontRollerVoltage(voltage);
   }
     
 }

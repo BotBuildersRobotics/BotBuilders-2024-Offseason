@@ -69,7 +69,7 @@ public class Constants {
 			config.CurrentLimits.StatorCurrentLimitEnable = true;
 			config.CurrentLimits.StatorCurrentLimit = 80;
 
-			config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+			config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 			return config;
 		}
 	}

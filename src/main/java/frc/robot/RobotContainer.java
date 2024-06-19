@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -39,6 +40,7 @@ import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
 import frc.robot.subsystems.Superstructure.SuperState;
 
 public class RobotContainer {
@@ -105,65 +107,65 @@ public class RobotContainer {
       .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE))
       .whileTrue
       (
+        new RepeatCommand(
           new SequentialCommandGroup
           (
-            new ConditionalCommand
+             new ConditionalCommand
             (
                 new SequentialCommandGroup
                 (
-                    new InstantCommand( () -> intake.SetFeederRotations(5)),
-                    new WaitCommand(1),
-                    new InstantCommand( () -> intake.SetFeederRotations(-5))
+                    //new InstantCommand( () -> intake.RunFeederVoltage(5)),
+                    //new WaitCommand(1),
+                    new InstantCommand( () -> intake.RunFeederVoltage(-5)),
+                    new InstantCommand(() -> intake.RunFrontRollerVoltage(-5)),
+                    new InstantCommand(() -> intake.RunCounterVoltage(-5)),
+                    new WaitCommand(1.5),
+                    superstructure.setWantedSuperStateCommand(SuperState.STAGE)
                 ),
-                superstructure.setWantedSuperStateCommand(SuperState.INTAKE),
-                new BooleanSupplier() 
-                {
-                    @Override
-                    public boolean getAsBoolean() 
-                    {
-                        
-                        return superstructure.getCurrentSuperState() == SuperState.SHUFFLE;
-                    }
-                }
+                new SequentialCommandGroup
+                (
+                 // new WaitCommand(0.5),
+                  superstructure.setWantedSuperStateCommand(SuperState.INTAKE)
+                ),
+                () -> intake.getCurrentState() == IntakeSystemState.STAGED
             ),
             new SequentialCommandGroup 
             (
-                  new WaitCommand(0.2),
+                  //new WaitCommand(0.2),
                   new ControllerRumbleCommand
                   (
                         driverControl, 
-                        new BooleanSupplier() 
-                        {
-                          @Override
-                          public boolean getAsBoolean() 
-                          {   
-                              return superstructure.getCurrentSuperState() == SuperState.STAGE ;
-                          }
-                        }
+                       () -> intake.getCurrentState() == IntakeSystemState.STAGED
                   ),
                   new ControllerRumbleCommand
                   (
                         operatorControl, 
-                        new BooleanSupplier() 
-                        {
-                          @Override
-                          public boolean getAsBoolean() 
-                          {   
-                              return superstructure.getCurrentSuperState() == SuperState.STAGE ;
-                          }
-                        }
+                        () -> intake.getCurrentState() == IntakeSystemState.STAGED
                   )
             )
           )
+        )
         );
         
 
     //SPIT OUT THE NOTE                          
-    operatorControl.leftTrigger()
+    operatorControl.leftBumper()
        .onTrue(superstructure.setWantedSuperStateCommand(SuperState.OUTTAKE))
        .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
 
+    //SHoot the staged shot
+    operatorControl.leftTrigger().onTrue(
+      new SequentialCommandGroup(
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+        
+      )
+    );
 
+ 
     operatorControl.a().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT));//.onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
     operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT));//.onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
                     
@@ -201,7 +203,7 @@ public class RobotContainer {
     
     //DRIVER CAN MOVE LATERALLY TO the AMP, based on April Tag
 
-    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  aprilTagLateral.getLateral() *  0.1))); //TODO Tune
+    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityY(  -aprilTagLateral.getLateral() *  1.1))); //TODO Tune
    
 
 

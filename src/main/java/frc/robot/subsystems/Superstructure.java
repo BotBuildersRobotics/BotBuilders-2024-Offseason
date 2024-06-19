@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,8 @@ public class Superstructure extends SubsystemBase {
 
     public static Superstructure mInstance;
 
+    private ShotPrepType shotPrep = ShotPrepType.SUB;
+
 	public static Superstructure getInstance() {
 
         //Rethink this for how advantage kit does 
@@ -25,6 +28,13 @@ public class Superstructure extends SubsystemBase {
 		}
 		return mInstance;
 	}
+
+    public enum ShotPrepType{
+        AMP,
+        SUB,
+        PASS,
+        LONG
+    }
 
     public enum SuperState {
         IDLE,
@@ -60,7 +70,9 @@ public class Superstructure extends SubsystemBase {
     @Override
     public void periodic() {
 
+
         currentSuperState = handleStateTransitions();
+        SmartDashboard.putString("Super State", currentSuperState.toString());
         applyStates();
 
     }
@@ -110,6 +122,11 @@ public class Superstructure extends SubsystemBase {
             case SHOOT_SUBWOOFER_SHOT:
                 currentSuperState = SuperState.PREPARE_SUBWOOFER_SHOT;
                 break;
+            case INTAKE:
+               
+                currentSuperState = intake.isBeamBreakTripped() ? SuperState.SHUFFLE : SuperState.INTAKE;
+               
+                break;
             case IDLE:
                 default:
                     currentSuperState = SuperState.IDLE;
@@ -128,11 +145,11 @@ public class Superstructure extends SubsystemBase {
                 break;
             case INTAKE:
                 handleIntake();
-                currentSuperState = intake.isBeamBreakTripped() ? SuperState.STAGE : SuperState.INTAKE;
+                 break;
+
+            case SHUFFLE:
+                handleShuffle();
                 break;
-            //case SHUFFLE:
-            //    handleShuffle();
-             //   break;
             case STAGE: //this is when the note is at the beam break
                 handleStaged();
                 break;
@@ -191,13 +208,19 @@ public class Superstructure extends SubsystemBase {
     private void handleSpeakerShot(){
         leds.setStrobeState(LightState.ORANGE);
         pivot.setWantedState(PivotSystemState.SPEAKER);
-        shooter.setWantedState(ShooterSystemState.SHOOT);
+       // shooter.setWantedState(ShooterSystemState.SHOOT);
+       shotPrep = ShotPrepType.SUB;
     }
 
     private void handleAmpShot(){
-         leds.setStrobeState(LightState.RED);
+        leds.setStrobeState(LightState.RED);
         pivot.setWantedState(PivotSystemState.AMP);
-        shooter.setWantedState(ShooterSystemState.AMP);
+        shotPrep = ShotPrepType.AMP;
+       // shooter.setWantedState(ShooterSystemState.AMP);
+    }
+
+    private void handleShuffle(){
+        
     }
 
     private void handleReadyForAmp(){
@@ -246,7 +269,8 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean isShooterAtSpeed(){
-        if(this.currentSuperState == SuperState.AMP_SHOT){
+        
+        if(this.shotPrep == ShotPrepType.AMP){
             return shooter.atAmpSetpoint();
         }
         else{
@@ -258,8 +282,12 @@ public class Superstructure extends SubsystemBase {
 
     private void handleReadyForShot(){
         leds.setStrobeState(LightState.GREEN);
-        shooter.setWantedState(ShooterSystemState.SHOOT);
-        intake.setWantedState(IntakeSystemState.FEEDING);
+        if(this.shotPrep == ShotPrepType.AMP){
+            shooter.setWantedState(ShooterSystemState.AMP);
+        }else{
+            shooter.setWantedState(ShooterSystemState.SHOOT);
+        }
+        //intake.setWantedState(IntakeSystemState.FEEDING);
 
     }
 
@@ -299,8 +327,8 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void handleControlledShot(){
-       // shooter.setWantedState(ShooterSystemState.SHOOT);
-       intake.setWantedState(IntakeSystemState.FEEDING);
+        shooter.setWantedState(ShooterSystemState.SHOOT);
+      // intake.setWantedState(IntakeSystemState.FEEDING);
     }
 
     public SuperState getCurrentSuperState(){

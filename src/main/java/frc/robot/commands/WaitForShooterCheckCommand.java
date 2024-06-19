@@ -10,7 +10,7 @@ public class WaitForShooterCheckCommand extends Command{
     public Superstructure superStructure = Superstructure.getInstance();
 
     private final Timer timer = new Timer();
-    private static final double DURATION = 0.5;
+    private static final double DURATION = 1.5;
 
     private boolean shooterIsAtSpeed = false;
 

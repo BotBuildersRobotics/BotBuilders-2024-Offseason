@@ -10,12 +10,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSubsystem extends SubsystemBase {
 
     private static final double ACCEPTABLE_RPM_ERROR = 10.0;
+    private static final double ACCEPTABLE_AMP_RPM_ERROR = 2.0;
 
     private static final double TOP_SHOT_RPM = 90;
     private static final double BOTTOM_SHOT_RPM = 90;
 
-    private static final double AMP_TOP_RPM = 80;
-    private static final double AMP_BOTTOM_RPM = 80;
+    private static final double AMP_TOP_RPM = 10;
+    private static final double AMP_BOTTOM_RPM = 15;
 
     
     public static ShooterSubsystem mInstance;
@@ -35,7 +36,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public enum ShooterSystemState {
         IDLE(0.0, 0.0,0,0),
         SHOOT(12.0, 12.0,0,0),
-        AMP(8.0, 8.0,0,0),
+        AMP(1.45, 2.7,0,0),
         PASS(8.0, 8.0,0,0),
         REVERSE(-6.0, -6.0,0,0);
 
@@ -64,22 +65,13 @@ public class ShooterSubsystem extends SubsystemBase {
         currentState = state;
     }
 
-    public void setWantedState(ShooterSystemState wantedState, double topRPM, double bottomRPM) {
-       
-        this.currentState = wantedState;
-
-        if(currentState == ShooterSystemState.AMP && topRPM != 0){
-            this.currentState = ShooterSystemState.AMP;
-            this.currentState.rpm_bottom = bottomRPM;
-            this.currentState.rpm_top = topRPM;
-        }
-    }
+   
 
     @Override
     public void periodic() {
 
         io.updateInputs(inputs);
-        Logger.processInputs("Intake", inputs);
+        Logger.processInputs("Shooter", inputs);
 
         // Stop moving when disabled
         if (DriverStation.isDisabled()) {
@@ -87,17 +79,11 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
         // write outputs
-        if(currentState == ShooterSystemState.AMP && currentState.rpm_top != 0){
+       
+        io.setBottomMotorVoltage(currentState.voltage_bottom);
+        io.setTopMotorVoltage(currentState.voltage_top);
 
-            io.setRPM(currentState.rpm_top, currentState.rpm_bottom);
-
-        }else{
-            io.setBottomMotorVoltage(currentState.voltage_bottom);
-            io.setTopMotorVoltage(currentState.voltage_top);
-
-            //TODO: Look at RPS values over voltage values
-        }
-
+           
     }
 
     public boolean atSpeakerSetpoint() {
@@ -106,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean atAmpSetpoint(){
-        return MathUtil.isNear(AMP_TOP_RPM, inputs.topVelocityRPS, ACCEPTABLE_RPM_ERROR)
+        return MathUtil.isNear(AMP_TOP_RPM, inputs.topVelocityRPS, ACCEPTABLE_AMP_RPM_ERROR)
                 && MathUtil.isNear(AMP_BOTTOM_RPM, inputs.bottomVelocityRPS, ACCEPTABLE_RPM_ERROR);
     }
 

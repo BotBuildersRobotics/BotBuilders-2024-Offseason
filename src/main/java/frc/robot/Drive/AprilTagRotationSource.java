@@ -3,6 +3,7 @@ package frc.robot.Drive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AprilTagRotationSource implements RotationSource {
 
@@ -20,6 +21,7 @@ public class AprilTagRotationSource implements RotationSource {
     @Override
     public double getRotation() {
         //the tx parameter has the rotation amount
+        SmartDashboard.putNumber("limelight-d", table.getEntry("tx").getDouble(0));
         return rotationPID.calculate(table.getEntry("tx").getDouble(0));
     }
 }
