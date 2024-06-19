@@ -33,13 +33,16 @@ public class Superstructure extends SubsystemBase {
         AMP,
         SUB,
         PASS,
-        LONG
+        LONG,
+        SPEAKER
     }
 
     public enum SuperState {
         IDLE,
         AMP_SHOT,
         SPEAKER_SHOT,
+        SUBWOOFER_SHOT,
+        LONG_PASS_SHOT,
         AUTO_AIM_SHOOTER,
         STOW_PIVOT,
         MANUAL_SHOT,
@@ -122,6 +125,12 @@ public class Superstructure extends SubsystemBase {
             case SHOOT_SUBWOOFER_SHOT:
                 currentSuperState = SuperState.PREPARE_SUBWOOFER_SHOT;
                 break;
+            case SUBWOOFER_SHOT:
+                 currentSuperState = SuperState.SUBWOOFER_SHOT;
+                 break;
+            case LONG_PASS_SHOT:
+                 currentSuperState = SuperState.LONG_PASS_SHOT;
+                 break;
             case INTAKE:
                
                 currentSuperState = intake.isBeamBreakTripped() ? SuperState.SHUFFLE : SuperState.INTAKE;
@@ -174,6 +183,10 @@ public class Superstructure extends SubsystemBase {
                 handleSpeakerShot();
                 break;
 
+            case SUBWOOFER_SHOT:
+                handleSubwooferShot();
+                break;
+
             case READY_FOR_AMP_SHOT:
                 handleReadyForAmp();
                 break;
@@ -208,15 +221,20 @@ public class Superstructure extends SubsystemBase {
     private void handleSpeakerShot(){
         leds.setStrobeState(LightState.ORANGE);
         pivot.setWantedState(PivotSystemState.SPEAKER);
-       // shooter.setWantedState(ShooterSystemState.SHOOT);
-       shotPrep = ShotPrepType.SUB;
+       shotPrep = ShotPrepType.SPEAKER;
     }
 
     private void handleAmpShot(){
         leds.setStrobeState(LightState.RED);
         pivot.setWantedState(PivotSystemState.AMP);
         shotPrep = ShotPrepType.AMP;
-       // shooter.setWantedState(ShooterSystemState.AMP);
+       
+    }
+
+    public void handleSubwooferShot(){
+        leds.setStrobeState(LightState.RAINBOW);
+        pivot.setWantedState(PivotSystemState.SUBWOOFER);
+        shotPrep = ShotPrepType.SUB;
     }
 
     private void handleShuffle(){
@@ -224,7 +242,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleReadyForAmp(){
-        leds.setStrobeState(LightState.GREEN);
+        leds.setStrobeState(LightState.RED);
         shooter.setWantedState(ShooterSystemState.AMP);
         intake.setWantedState(IntakeSystemState.FEEDING);
     }
@@ -281,11 +299,17 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleReadyForShot(){
-        leds.setStrobeState(LightState.GREEN);
+        
+        leds.setStrobeState(LightState.FIRE);
+
         if(this.shotPrep == ShotPrepType.AMP){
             shooter.setWantedState(ShooterSystemState.AMP);
-        }else{
-            shooter.setWantedState(ShooterSystemState.SHOOT);
+        }
+        else if(this.shotPrep == ShotPrepType.SUB){
+             shooter.setWantedState(ShooterSystemState.SHOOT);
+        }
+        else{
+            shooter.setWantedState(ShooterSystemState.LONG_SHOT);
         }
         //intake.setWantedState(IntakeSystemState.FEEDING);
 
@@ -321,7 +345,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleOuttake() {
-
+        leds.setStrobeState(LightState.COLOR_FLOW_RED);
         intake.setWantedState(IntakeSystemState.REVERSE);
         shooter.setWantedState(ShooterSystemState.IDLE);
     }

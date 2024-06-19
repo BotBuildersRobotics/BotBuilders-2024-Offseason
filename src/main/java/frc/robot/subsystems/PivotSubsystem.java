@@ -37,9 +37,10 @@ public class PivotSubsystem extends SubsystemBase {
     public enum PivotSystemState{
         INTAKE(42),
         AMP(35),
-        SPEAKER(30),
+        SPEAKER(24),
         STOW(0),
-        LONG_RANGE(40),
+        SUBWOOFER(33),
+        LONG_RANGE(19),
         LOW_PASS(20),
         CUSTOM(0);
 
