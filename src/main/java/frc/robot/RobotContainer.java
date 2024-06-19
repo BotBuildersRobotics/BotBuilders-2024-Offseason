@@ -4,22 +4,33 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Drive.AprilTagLateralSource;
 import frc.robot.Drive.AprilTagRotationSource;
-import frc.robot.commands.PivotCommand;
+import frc.robot.commands.ControllerRumbleCommand;
+import frc.robot.commands.WaitForPivotCheckCommand;
+import frc.robot.commands.WaitForShooterCheckCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.OperatorDashboard;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -39,10 +50,13 @@ public class RobotContainer {
   private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   private PivotSubsystem pivot = PivotSubsystem.getInstance();
   private LightsSubsystem lights = LightsSubsystem.getInstance();
+  private IntakeSubsystem intake = IntakeSubsystem.getInstance();
 
   private Superstructure superstructure = Superstructure.getInstance();
 
   private final OperatorDashboard dashboard;
+
+  private SendableChooser<Command> autoChooser;
 
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -72,8 +86,11 @@ public class RobotContainer {
  // private Command autoRun = drivetrain.getAutoPath("Blue1");
 
   private void configureBindings() {
+
+    //Build the autos from pathplanner
+    autoChooser = AutoBuilder.buildAutoChooser();
    
-   
+    //DRIVE THE ROBOT
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-driverControl.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
@@ -81,81 +98,113 @@ public class RobotContainer {
             .withRotationalRate(-driverControl.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    //driverControl.rightTrigger().onTrue(new IntakeOnCommand(intake)).onFalse(new IntakeIdleCommand(intake));
-
-    //driverControl.a().onTrue(new ShootCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
-
-    driverControl.rightTrigger().onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
-
-
-    driverControl.a().onTrue( superstructure.setWantedSuperStateCommand(SuperState.MANUAL_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
-
-
-    driverControl.y().onTrue(superstructure.setWantedSuperStateCommand(SuperState.CONTROLLED_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
-
-    driverControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT)).onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
-
-    //.onFalse(
-       // superstructure.setWantedSuperStateCommand(SuperState.IDLE)
-    //);
-
-    //driverControl.b().onTrue(new IntakeFeedCommand(intake)).onFalse(new IntakeIdleCommand(intake));
     
-    //driverControl.x().onTrue(new ShooterAmpCommand(shooter)).onFalse(new ShooterIdleCommand(shooter));
+    //ACCEPT THE NOTE - RUMBLE WHEN IN
+    operatorControl.rightTrigger()
+      .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
+      .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE))
+      .whileTrue
+      (
+          new SequentialCommandGroup
+          (
+            new ConditionalCommand
+            (
+                new SequentialCommandGroup
+                (
+                    new InstantCommand( () -> intake.SetFeederRotations(5)),
+                    new WaitCommand(1),
+                    new InstantCommand( () -> intake.SetFeederRotations(-5))
+                ),
+                superstructure.setWantedSuperStateCommand(SuperState.INTAKE),
+                new BooleanSupplier() 
+                {
+                    @Override
+                    public boolean getAsBoolean() 
+                    {
+                        
+                        return superstructure.getCurrentSuperState() == SuperState.SHUFFLE;
+                    }
+                }
+            ),
+            new SequentialCommandGroup 
+            (
+                  new WaitCommand(0.2),
+                  new ControllerRumbleCommand
+                  (
+                        driverControl, 
+                        new BooleanSupplier() 
+                        {
+                          @Override
+                          public boolean getAsBoolean() 
+                          {   
+                              return superstructure.getCurrentSuperState() == SuperState.STAGE ;
+                          }
+                        }
+                  ),
+                  new ControllerRumbleCommand
+                  (
+                        operatorControl, 
+                        new BooleanSupplier() 
+                        {
+                          @Override
+                          public boolean getAsBoolean() 
+                          {   
+                              return superstructure.getCurrentSuperState() == SuperState.STAGE ;
+                          }
+                        }
+                  )
+            )
+          )
+        );
+        
 
-    IntSupplier upD = new IntSupplier() {
-      @Override
-      public int getAsInt() {
-          
-          return 20;
-      }
-    };
-
-    driverControl.povUp().onTrue(new PivotCommand(pivot, upD));
-
-    driverControl.povDown().onTrue(new PivotCommand(pivot, new IntSupplier() {
-      @Override
-      public int getAsInt(){
-        return 10;
-      }
-    }));
-    
-
-    //reverse intake and turn led red
-    /*joystick.leftTrigger()
-        .whileTrue(new RedLEDCommand(lights))
-        .whileFalse(new BlueLEDCommand(lights))
-        .whileTrue(new IntakeReverseCommand(intake))
-        .whileFalse(new IntakeIdleCommand(intake));*/
-
-    //use the d pad up button to drive the robot forward - just a test
-    //joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+    //SPIT OUT THE NOTE                          
+    operatorControl.leftTrigger()
+       .onTrue(superstructure.setWantedSuperStateCommand(SuperState.OUTTAKE))
+       .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
 
 
+    operatorControl.a().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT));//.onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+    operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT));//.onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+                    
 
-    //joystick.povUpLeft().whileTrue(new PivotCommand(pivot, degrees1));
+    operatorControl.x().onTrue(
+        new SequentialCommandGroup(                  
+            superstructure.setWantedSuperStateCommand(SuperState.CONTROLLED_SHOT),
+            new WaitForShooterCheckCommand(),
+            superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+            new WaitCommand(0.5),
+            superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+        )
+    );
 
-     //joystick.povUpRight().whileTrue(new PivotCommand(pivot, degrees2));
+    //Operator can manually STOW
+    operatorControl.leftBumper().onTrue(
+      superstructure.setWantedSuperStateCommand(SuperState.STOW_PIVOT)
+    );
 
-    //b button will activate the limelite april tag lookup.
-    //joystick.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+    //Move the pivot up 
+    operatorControl.povUp().onTrue(
+            new InstantCommand(() -> pivot.setAngle(pivot.getCurrentPosition() + 2))
+
+     );
+
+     //Move the pivot down
+     operatorControl.povDown().onTrue(
+            new InstantCommand(() -> pivot.setAngle(pivot.getCurrentPosition() -2))
+
+     );
+
+    //DRIVER CAN ROTATE to aim at April Tag
+    driverControl.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
-    //driverControl.b().whileTrue(drivetrain.applyRequest(() -> lateralMovement. .withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+    
+    //DRIVER CAN MOVE LATERALLY TO the AMP, based on April Tag
+
+    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  aprilTagLateral.getLateral() *  0.1))); //TODO Tune
    
-//    driverControl.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-
-    //driverControl.povUp().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(0).withVelocityY(aprilTagLateral.getLateral())));
 
 
-    //joystick.a().whileTrue(new ShootCommand(shooter)).whileFalse(new ShooterIdleCommand(shooter));
-
-    
-    
-    
-    //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-   /*joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-    */
     // reset the field-centric heading on left bumper press
     driverControl.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
@@ -171,10 +220,20 @@ public class RobotContainer {
 
     configureBindings();
 
-    //NamedCommands.registerCommand("MessageThing", Commands.print("Tests"));
+    NamedCommands.registerCommand("AutoShoot", 
+      new SequentialCommandGroup(
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No Auto");
+    return autoChooser.getSelected();
+   // return Commands.print("No Auto");
   }
 }

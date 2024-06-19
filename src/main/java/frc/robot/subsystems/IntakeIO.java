@@ -24,4 +24,10 @@ public interface IntakeIO {
     default void setRearMotorVoltage(double voltage) {}
 
     default void setFeederMotorVoltage(double voltage) {}
+
+    default void MoveFeederRotations(int rotations) {};
+
+    default void RunFeederVoltage(int voltage){};
+
+    default void RunCounterVoltage(int voltage){};
 }

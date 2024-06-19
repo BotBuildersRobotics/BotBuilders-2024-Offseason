@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -67,6 +69,22 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.beamBreakTripped = !beamBreakSensor.get();
+    }
+
+     @Override
+    public void MoveFeederRotations(int rotations){
+       
+         feederRoller.setControl(new MotionMagicVoltage(rotations));
+    }
+
+    @Override
+    public void RunFeederVoltage(int voltage){
+         feederRoller.setControl(feederRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
+    }
+
+    @Override
+    public void RunCounterVoltage(int voltage){
+        rearRoller.setControl(rearRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
     }
 
 }

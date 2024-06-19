@@ -22,5 +22,13 @@ public interface ShooterIO {
 
     default void setBottomMotorVoltage(double voltage) {}
 
+    default void setTopMotorRPStage(double rps) {}
+
+    default void setBottomMotorRPS(double rps) {}
+
     default void setRPM(double topTargetRPM, double bottomTargetRPM){}
+
+    default boolean isShooterAmpReady(){return false;}
+
+    default boolean isShooterReady(){return false;}
 }

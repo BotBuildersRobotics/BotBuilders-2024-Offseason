@@ -9,16 +9,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private static final double ACCEPTABLE_RPM_ERROR = 500.0;
-    private static final double TOP_SHOT_RPM = 11000.0;
-    private static final double BOTTOM_SHOT_RPM = 6000.0;
-    private static final double AMP_TOP_RPM = 2050;
-    private static final double AMP_BOTTOM_RPM = 2050;
-    private static final double OUTTAKE_RPM = 1500;
-    private double topFeedShotRPM = 5000;
-    private double bottomFeedShotRPM = 5000;
+    private static final double ACCEPTABLE_RPM_ERROR = 10.0;
 
+    private static final double TOP_SHOT_RPM = 90;
+    private static final double BOTTOM_SHOT_RPM = 90;
 
+    private static final double AMP_TOP_RPM = 80;
+    private static final double AMP_BOTTOM_RPM = 80;
+
+    
     public static ShooterSubsystem mInstance;
 
 	public static ShooterSubsystem getInstance() {
@@ -95,18 +94,20 @@ public class ShooterSubsystem extends SubsystemBase {
         }else{
             io.setBottomMotorVoltage(currentState.voltage_bottom);
             io.setTopMotorVoltage(currentState.voltage_top);
+
+            //TODO: Look at RPS values over voltage values
         }
 
     }
 
     public boolean atSpeakerSetpoint() {
-        return MathUtil.isNear(TOP_SHOT_RPM, currentState.rpm_top, ACCEPTABLE_RPM_ERROR)
-                && MathUtil.isNear(BOTTOM_SHOT_RPM, currentState.rpm_bottom, ACCEPTABLE_RPM_ERROR);
+        return MathUtil.isNear(TOP_SHOT_RPM, inputs.topVelocityRPS, ACCEPTABLE_RPM_ERROR)
+                && MathUtil.isNear(BOTTOM_SHOT_RPM, inputs.bottomVelocityRPS, ACCEPTABLE_RPM_ERROR);
     }
 
     public boolean atAmpSetpoint(){
-        return MathUtil.isNear(AMP_TOP_RPM, currentState.rpm_top, ACCEPTABLE_RPM_ERROR)
-                && MathUtil.isNear(AMP_BOTTOM_RPM, currentState.rpm_bottom, ACCEPTABLE_RPM_ERROR);
+        return MathUtil.isNear(AMP_TOP_RPM, inputs.topVelocityRPS, ACCEPTABLE_RPM_ERROR)
+                && MathUtil.isNear(AMP_BOTTOM_RPM, inputs.bottomVelocityRPS, ACCEPTABLE_RPM_ERROR);
     }
 
    

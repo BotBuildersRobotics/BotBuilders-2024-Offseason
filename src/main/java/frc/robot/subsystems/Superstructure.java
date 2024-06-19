@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
 import frc.robot.subsystems.LightsSubsystem.LightState;
+import frc.robot.subsystems.PivotSubsystem.PivotSystemState;
 import frc.robot.subsystems.ShooterSubsystem.ShooterSystemState;
 
 public class Superstructure extends SubsystemBase {
@@ -28,11 +29,13 @@ public class Superstructure extends SubsystemBase {
     public enum SuperState {
         IDLE,
         AMP_SHOT,
+        SPEAKER_SHOT,
         AUTO_AIM_SHOOTER,
         STOW_PIVOT,
         MANUAL_SHOT,
         INTAKE,
         STAGE,
+        SHUFFLE,
         FEEDING,
         OUTTAKE,
         CONTROLLED_SHOT,
@@ -72,10 +75,17 @@ public class Superstructure extends SubsystemBase {
                 currentSuperState = SuperState.OUTTAKE;
                 break;
             case CONTROLLED_SHOT:
-                currentSuperState = areSystemsReadyForShot() ? SuperState.READY_FOR_SHOT : SuperState.CONTROLLED_SHOT;
+                currentSuperState = SuperState.CONTROLLED_SHOT;
                 break;
             case AMP_SHOT:
-                currentSuperState = areSystemsReadyForAmpShot() ? SuperState.READY_FOR_AMP_SHOT : SuperState.AMP_SHOT;
+                currentSuperState = SuperState.AMP_SHOT;
+                break;
+             case SPEAKER_SHOT:
+                currentSuperState = SuperState.SPEAKER_SHOT;
+                break;
+            case SHUFFLE: 
+                 currentSuperState = SuperState.SHUFFLE;
+                break;
             case FEEDING:
                 currentSuperState = SuperState.FEEDING;
                 break;
@@ -98,7 +108,7 @@ public class Superstructure extends SubsystemBase {
                 currentSuperState = SuperState.PREPARE_SUBWOOFER_SHOT;
                 break;
             case SHOOT_SUBWOOFER_SHOT:
-                currentSuperState = isPivotReadyForSubwoofer() ? SuperState.READY_FOR_SHOT : SuperState.PREPARE_SUBWOOFER_SHOT;
+                currentSuperState = SuperState.PREPARE_SUBWOOFER_SHOT;
                 break;
             case IDLE:
                 default:
@@ -120,6 +130,9 @@ public class Superstructure extends SubsystemBase {
                 handleIntake();
                 currentSuperState = intake.isBeamBreakTripped() ? SuperState.STAGE : SuperState.INTAKE;
                 break;
+            //case SHUFFLE:
+            //    handleShuffle();
+             //   break;
             case STAGE: //this is when the note is at the beam break
                 handleStaged();
                 break;
@@ -139,6 +152,9 @@ public class Superstructure extends SubsystemBase {
 
             case AMP_SHOT:
                 handleAmpShot();
+                break;
+            case SPEAKER_SHOT:
+                handleSpeakerShot();
                 break;
 
             case READY_FOR_AMP_SHOT:
@@ -164,13 +180,23 @@ public class Superstructure extends SubsystemBase {
     private void handlePrepareSubWooferShot()
     {
         //move the pivot to the correct location
+        pivot.setWantedState(PivotSystemState.SPEAKER);
     }
 
     private void  handleMovePivotToStow(){
         //move the pivot to the stow position.
+        pivot.setWantedState(PivotSystemState.STOW);
+    }
+
+    private void handleSpeakerShot(){
+        leds.setStrobeState(LightState.ORANGE);
+        pivot.setWantedState(PivotSystemState.SPEAKER);
+        shooter.setWantedState(ShooterSystemState.SHOOT);
     }
 
     private void handleAmpShot(){
+         leds.setStrobeState(LightState.RED);
+        pivot.setWantedState(PivotSystemState.AMP);
         shooter.setWantedState(ShooterSystemState.AMP);
     }
 
@@ -179,6 +205,8 @@ public class Superstructure extends SubsystemBase {
         shooter.setWantedState(ShooterSystemState.AMP);
         intake.setWantedState(IntakeSystemState.FEEDING);
     }
+
+    
 
     private boolean areSystemsReadyForShot(){
         boolean ready = false;
@@ -208,6 +236,26 @@ public class Superstructure extends SubsystemBase {
         return true;
     }
 
+    public boolean isPivotAtAngle(double angle){
+        if(angle >= pivot.getCurrentPosition()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean isShooterAtSpeed(){
+        if(this.currentSuperState == SuperState.AMP_SHOT){
+            return shooter.atAmpSetpoint();
+        }
+        else{
+            return shooter.atSpeakerSetpoint();
+        }
+
+       
+    }
+
     private void handleReadyForShot(){
         leds.setStrobeState(LightState.GREEN);
         shooter.setWantedState(ShooterSystemState.SHOOT);
@@ -234,11 +282,13 @@ public class Superstructure extends SubsystemBase {
         leds.setState(LightState.BLUE);
         intake.setWantedState(IntakeSystemState.IDLE);
         shooter.setWantedState(ShooterSystemState.IDLE);
+        pivot.setWantedState(PivotSystemState.STOW);
 
     }
 
     private void handleIntake(){
         leds.setStrobeState(LightState.ORANGE);
+        pivot.setWantedState(PivotSystemState.INTAKE);
         intake.setWantedState(IntakeSystemState.INTAKE);
     }
 
@@ -249,7 +299,12 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void handleControlledShot(){
-        shooter.setWantedState(ShooterSystemState.SHOOT);
+       // shooter.setWantedState(ShooterSystemState.SHOOT);
+       intake.setWantedState(IntakeSystemState.FEEDING);
+    }
+
+    public SuperState getCurrentSuperState(){
+        return this.currentSuperState;
     }
 
 

@@ -20,7 +20,7 @@ public class PivotCommand extends Command {
 
   @Override
   public void initialize() {
-    pivotSubSystem.setHeight(wantedDegrees.getAsInt());
+    pivotSubSystem.setAngle(wantedDegrees.getAsInt());
   }
 
 }

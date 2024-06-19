@@ -39,7 +39,8 @@ public class IntakeSubsystem extends SubsystemBase {
 		INTAKE(8.0, 8.0, 5),
 		REVERSE(-6.0, -6.0, -5),
     STAGED(0.0,0.0,0.0),
-    FEEDING(6.0,6.0,12);
+    FEEDING(6.0,6.0,12),
+    SHUFFLE(0,0,0);
 
 		public double roller_voltage_front;
     public double roller_voltage_rear;
@@ -77,14 +78,15 @@ public class IntakeSubsystem extends SubsystemBase {
        //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
        
         currentState = IntakeSystemState.STAGED;
-        
 
     }
 
 
-    io.setFrontMotorVoltage(currentState.roller_voltage_rear);
-    io.setRearMotorVoltage(currentState.roller_voltage_rear);
-    io.setFeederMotorVoltage(currentState.feeder_voltage);
+    if(currentState != IntakeSystemState.SHUFFLE){
+      io.setFrontMotorVoltage(currentState.roller_voltage_rear);
+      io.setRearMotorVoltage(currentState.roller_voltage_rear);
+      io.setFeederMotorVoltage(currentState.feeder_voltage);
+    }
     
 
   }
@@ -96,6 +98,19 @@ public class IntakeSubsystem extends SubsystemBase {
   /** Returns true if the beam break is tripped */
   public boolean isBeamBreakTripped() {
       return inputs.beamBreakTripped;
+  }
+
+  public void SetFeederRotations(int rotations){
+    this.setWantedState(IntakeSystemState.SHUFFLE);
+    io.MoveFeederRotations(rotations);
+  }
+
+  public void RunFeederVoltage(int voltage){
+    io.RunFeederVoltage(voltage);
+  }
+
+  public void RunCounterVoltage(int voltage){
+    io.RunCounterVoltage(voltage);
   }
     
 }

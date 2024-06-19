@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,6 +27,11 @@ public class ShooterIOPhoenix6 implements ShooterIO {
     private final VelocityVoltage rightShooterVelocityControl =
             new VelocityVoltage(0, 0, true, 0, SLOT, false, false, false);
 
+    private final MotionMagicVelocityVoltage mmTopRequest = new MotionMagicVelocityVoltage(0);
+    private final MotionMagicVelocityVoltage mmRequest = new MotionMagicVelocityVoltage(0);
+
+    private MotionMagicConfigs motionMagicConfigs;
+
     public ShooterIOPhoenix6()
     {
        
@@ -36,6 +43,15 @@ public class ShooterIOPhoenix6 implements ShooterIO {
         TalonUtil.applyAndCheckConfiguration(mBottomFX, Constants.ShooterConstants.ShooterFXConfig());
         mBottomFX.setInverted(true);
         
+
+        motionMagicConfigs = new MotionMagicConfigs();
+        motionMagicConfigs.MotionMagicAcceleration = 80;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 180;
+        motionMagicConfigs.MotionMagicJerk = 0;
+
+        mTopFX.getConfigurator().apply(motionMagicConfigs);
+        mBottomFX.getConfigurator().apply(motionMagicConfigs);
+
 
     }
 
@@ -74,7 +90,18 @@ public class ShooterIOPhoenix6 implements ShooterIO {
         mBottomFX.setControl(bottomRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
     }
 
-    private final double SHOOTER_GEAR_RATIO = 2.0 / 5.0;
+    @Override
+    public void setTopMotorRPStage(double rps) {
+        mTopFX.setControl(mmTopRequest.withVelocity(rps));
+    }
+
+    @Override
+    public void setBottomMotorRPS(double rps) {
+        mBottomFX.setControl(mmRequest.withVelocity(rps));
+    }
+    
+
+    private final double SHOOTER_GEAR_RATIO = 1.3;
 
     @Override
     public void setRPM(double topTargetRPM, double bottomTargetRPM) {
