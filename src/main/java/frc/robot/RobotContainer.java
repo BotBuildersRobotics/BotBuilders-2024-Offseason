@@ -199,12 +199,12 @@ public class RobotContainer {
      operatorControl.leftBumper().onTrue(new InstantCommand( ()-> pivot.setHeight(0)));
 
      operatorControl.povUp().onTrue(
-            new InstantCommand(() -> pivot.incrementHeight(2))
+            new InstantCommand(() -> pivot.incrementHeight(1))
 
      );
 
      operatorControl.povDown().onTrue(
-            new InstantCommand(() -> pivot.incrementHeight(-2))
+            new InstantCommand(() -> pivot.incrementHeight(-1))
 
      );
 

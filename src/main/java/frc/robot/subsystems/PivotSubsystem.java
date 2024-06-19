@@ -103,8 +103,8 @@ public class PivotSubsystem extends SubsystemBase {
         slot0Configs.kV = 0.12;
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration = 100;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 100;
+        motionMagicConfigs.MotionMagicAcceleration = 200;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 200;
         motionMagicConfigs.MotionMagicJerk = 0;
 
 
