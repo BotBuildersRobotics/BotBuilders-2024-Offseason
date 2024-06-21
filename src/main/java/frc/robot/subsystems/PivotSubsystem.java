@@ -37,7 +37,7 @@ public class PivotSubsystem extends SubsystemBase {
     public enum PivotSystemState{
         INTAKE(42),
         AMP(35),
-        SPEAKER(24),
+        SPEAKER(18),
         STOW(0),
         SUBWOOFER(33),
         LONG_RANGE(19),
@@ -102,7 +102,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     //Returns the angle of the pivot
     public double getCurrentPosition(){
-        return this.io.getCurrentPosition();
+        return currentState.angle;//this.io.getCurrentPosition();
     }
 
    

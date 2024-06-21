@@ -214,10 +214,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AutoShoot", 
       new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
         new WaitForPivotCheckCommand(),
-        superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT),
-        new WaitForShooterCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
         new WaitCommand(0.5),
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
       )
@@ -225,7 +227,17 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    //return autoChooser.getSelected();
+    return new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      );
    // return Commands.print("No Auto");
   }
 }
