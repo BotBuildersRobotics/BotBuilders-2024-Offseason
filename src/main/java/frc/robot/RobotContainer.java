@@ -231,7 +231,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         
         superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
-        new WaitForPivotCheckCommand(),
+        //new WaitForPivotCheckCommand(),
+        new WaitCommand(1),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
         new WaitForShooterCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.FEEDING),

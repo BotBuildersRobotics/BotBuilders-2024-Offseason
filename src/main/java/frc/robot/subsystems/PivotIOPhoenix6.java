@@ -88,8 +88,8 @@ public class PivotIOPhoenix6 implements PivotIO{
         slot0Configs.kV = 0.12;
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration = 100;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 100;
+        motionMagicConfigs.MotionMagicAcceleration = 140;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 140;
         motionMagicConfigs.MotionMagicJerk = 0;
 
 
