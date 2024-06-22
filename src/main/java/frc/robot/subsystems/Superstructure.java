@@ -219,20 +219,20 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleSpeakerShot(){
-        leds.setStrobeState(LightState.ORANGE);
+       // leds.setStrobeState(LightState.ORANGE);
         pivot.setWantedState(PivotSystemState.SPEAKER);
        shotPrep = ShotPrepType.SPEAKER;
     }
 
     private void handleAmpShot(){
-        leds.setStrobeState(LightState.RED);
+       // leds.setStrobeState(LightState.RED);
         pivot.setWantedState(PivotSystemState.AMP);
         shotPrep = ShotPrepType.AMP;
        
     }
 
     public void handleSubwooferShot(){
-        leds.setStrobeState(LightState.RAINBOW);
+       // leds.setStrobeState(LightState.RAINBOW);
         pivot.setWantedState(PivotSystemState.SUBWOOFER);
         shotPrep = ShotPrepType.SUB;
     }
@@ -242,7 +242,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleReadyForAmp(){
-        leds.setStrobeState(LightState.RED);
+       // leds.setStrobeState(LightState.RED);
         shooter.setWantedState(ShooterSystemState.AMP);
         intake.setWantedState(IntakeSystemState.FEEDING);
     }
@@ -300,7 +300,7 @@ public class Superstructure extends SubsystemBase {
 
     private void handleReadyForShot(){
         
-        leds.setStrobeState(LightState.FIRE);
+       // leds.setStrobeState(LightState.FIRE);
 
         if(this.shotPrep == ShotPrepType.AMP){
             shooter.setWantedState(ShooterSystemState.AMP);
@@ -339,13 +339,13 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleIntake(){
-        leds.setStrobeState(LightState.ORANGE);
+        leds.setState(LightState.BLUE);
         pivot.setWantedState(PivotSystemState.INTAKE);
         intake.setWantedState(IntakeSystemState.INTAKE);
     }
 
     private void handleOuttake() {
-        leds.setStrobeState(LightState.COLOR_FLOW_RED);
+        //leds.setStrobeState(LightState.COLOR_FLOW_RED);
         intake.setWantedState(IntakeSystemState.REVERSE);
         shooter.setWantedState(ShooterSystemState.IDLE);
     }
