@@ -341,7 +341,9 @@ public class Superstructure extends SubsystemBase {
     private void handleIntake(){
         leds.setState(LightState.BLUE);
         pivot.setWantedState(PivotSystemState.INTAKE);
-        intake.setWantedState(IntakeSystemState.INTAKE);
+        if(pivot.getPivotAngle() > 30){ //only start the intake once the pivot is greater 30 degrees
+            intake.setWantedState(IntakeSystemState.INTAKE);
+        }
     }
 
     private void handleOuttake() {

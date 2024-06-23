@@ -21,6 +21,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Ports;
 import frc.robot.lib.TalonFXFactory;
+import frc.robot.subsystems.IntakeIO.IntakeIOInputs;
 
 public class PivotIOPhoenix6 implements PivotIO{
     
@@ -88,8 +89,8 @@ public class PivotIOPhoenix6 implements PivotIO{
         slot0Configs.kV = 0.12;
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration = 140;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 140;
+        motionMagicConfigs.MotionMagicAcceleration = 180;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 180;
         motionMagicConfigs.MotionMagicJerk = 0;
 
 
@@ -129,6 +130,41 @@ public class PivotIOPhoenix6 implements PivotIO{
 
         follower.setControl(new Follower(Ports.PIVOT_MAIN.getDeviceNumber(), true));
 
+    }
+
+    @Override
+    public void updateInputs(PivotIOInputs inputs) {
+       
+        inputs.leftMotorConnected = BaseStatusSignal.refreshAll(
+                        leader.getMotorVoltage(),
+                        leader.getSupplyCurrent(),
+                        leader.getDeviceTemp(),
+                        leader.getVelocity(),
+                        leader.getPosition())
+                .isOK();
+        inputs.rightMotorConnected = BaseStatusSignal.refreshAll(
+                        follower.getMotorVoltage(),
+                        follower.getSupplyCurrent(),
+                        follower.getDeviceTemp(),
+                        follower.getVelocity(),
+                        follower.getPosition()
+                        )
+                .isOK();
+
+        
+
+        inputs.leftVoltage = leader.getMotorVoltage().getValueAsDouble();
+        inputs.leftCurrent = leader.getSupplyCurrent().getValueAsDouble();
+        inputs.leftTemperature = leader.getDeviceTemp().getValueAsDouble();
+        inputs.leftVelocityRPS = leader.getVelocity().getValueAsDouble();
+        inputs.leftPosition = leader.getMotorVoltage().getValueAsDouble();
+
+        inputs.rightVoltage = follower.getMotorVoltage().getValueAsDouble();
+        inputs.rightCurrent = follower.getSupplyCurrent().getValueAsDouble();
+        inputs.rightTemperature = follower.getDeviceTemp().getValueAsDouble();
+        inputs.rightVelocityRPS = follower.getVelocity().getValueAsDouble();
+        inputs.rightPosition = follower.getMotorVoltage().getValueAsDouble();
+        
     }
 
     public void enableBrakeMode(boolean enable) {

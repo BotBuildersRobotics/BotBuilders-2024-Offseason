@@ -82,7 +82,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         io.updateInputs(inputs);
         Logger.processInputs("Pivot", inputs);
-        SmartDashboard.putNumber("Pivot Value", setpoint);
+       // SmartDashboard.putNumber("Pivot Value", setpoint);
 
 
         if(currentState == PivotSystemState.CUSTOM){
@@ -103,6 +103,10 @@ public class PivotSubsystem extends SubsystemBase {
     //Returns the angle of the pivot
     public double getCurrentPosition(){
         return currentState.angle;//this.io.getCurrentPosition();
+    }
+
+    public double getPivotAngle(){
+        return this.io.getCurrentPosition();
     }
 
    
