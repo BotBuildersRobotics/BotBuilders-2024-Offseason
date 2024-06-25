@@ -91,8 +91,7 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    //Build the autos from pathplanner
-    autoChooser = AutoBuilder.buildAutoChooser();
+    
    
     //DRIVE THE ROBOT
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -168,9 +167,12 @@ public class RobotContainer {
 
  
     operatorControl.a().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT));
-    operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT));
+    //operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT));
     operatorControl.y().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT));
-    operatorControl.x().onTrue(superstructure.setWantedSuperStateCommand(SuperState.LONG_PASS_SHOT));                
+    operatorControl.x().onTrue(superstructure.setWantedSuperStateCommand(SuperState.LONG_PASS_SHOT)); 
+    
+    //treat the B button as auto aim.
+    operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AUTO_SHOT));
 
     
 
@@ -214,6 +216,8 @@ public class RobotContainer {
 
     configureBindings();
 
+    
+
     NamedCommands.registerCommand("AutoShoot", 
       new SequentialCommandGroup(
         
@@ -226,11 +230,15 @@ public class RobotContainer {
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
       )
     );
+
+    //Build the autos from pathplanner
+    autoChooser = AutoBuilder.buildAutoChooser();
+
   }
 
   public Command getAutonomousCommand() {
-    //return autoChooser.getSelected();
-    return new SequentialCommandGroup(
+    return autoChooser.getSelected();
+   /*  return new SequentialCommandGroup(
         
         superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
         //new WaitForPivotCheckCommand(),
@@ -240,7 +248,7 @@ public class RobotContainer {
         superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
         new WaitCommand(0.5),
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
-      );
+      );*/
    // return Commands.print("No Auto");
   }
 }

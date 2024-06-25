@@ -31,6 +31,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     private final LimelightConfiguration limelightConfiguration;
 
+    
 
     public static VisionSubsystem mInstance;
 

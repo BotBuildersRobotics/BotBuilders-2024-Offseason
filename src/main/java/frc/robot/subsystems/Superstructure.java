@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.lib.InterpolatingDouble;
+import frc.robot.lib.RegressionMap;
 import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
 import frc.robot.subsystems.LightsSubsystem.LightState;
 import frc.robot.subsystems.PivotSubsystem.PivotSystemState;
@@ -47,6 +49,7 @@ public class Superstructure extends SubsystemBase {
         AUTO_AIM_SHOOTER,
         STOW_PIVOT,
         MANUAL_SHOT,
+        AUTO_SHOT,
         INTAKE,
         STAGE,
         SHUFFLE,
@@ -89,6 +92,9 @@ public class Superstructure extends SubsystemBase {
 
             case OUTTAKE:
                 currentSuperState = SuperState.OUTTAKE;
+                break;
+            case AUTO_SHOT:
+                currentSuperState = SuperState.AUTO_SHOT;
                 break;
             case CONTROLLED_SHOT:
                 currentSuperState = SuperState.CONTROLLED_SHOT;
@@ -156,7 +162,9 @@ public class Superstructure extends SubsystemBase {
             case INTAKE:
                 handleIntake();
                  break;
-
+            case AUTO_SHOT:
+                handleAutoShot();
+                break;
             case SHUFFLE:
                 handleShuffle();
                 break;
@@ -212,6 +220,13 @@ public class Superstructure extends SubsystemBase {
     {
         //move the pivot to the correct location
         pivot.setWantedState(PivotSystemState.SPEAKER);
+    }
+
+    private void handleAutoShot(){
+        double targetMetres = vision.getHorizontalDistanceToTargetMeters();
+        double visionAngle = RegressionMap.kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
+        //do a lookup in our lookup Table, interoplate as needed
+        pivot.setAngle(visionAngle);
     }
 
     private void  handleMovePivotToStow(){
