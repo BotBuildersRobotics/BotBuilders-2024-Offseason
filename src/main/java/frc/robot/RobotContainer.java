@@ -117,10 +117,10 @@ public class RobotContainer {
                 new SequentialCommandGroup
                 (
                    
-                    new InstantCommand( () -> intake.RunFeederVoltage(-5)), //Run in reverse to help clear note jams
-                    new InstantCommand(() -> intake.RunFrontRollerVoltage(-5)),
-                    new InstantCommand(() -> intake.RunCounterVoltage(-5)),
-                    new WaitCommand(1.5),  //run just for a small period of time
+                    new InstantCommand( () -> intake.RunFeederVoltage(-6)), //Run in reverse to help clear note jams
+                    new InstantCommand(() -> intake.RunFrontRollerVoltage(-6)),
+                    new InstantCommand(() -> intake.RunCounterVoltage(-6)),
+                    new WaitCommand(0.5),  //run just for a small period of time
                     superstructure.setWantedSuperStateCommand(SuperState.STAGE)
                 ),
                 new SequentialCommandGroup
@@ -216,10 +216,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AutoShoot", 
       new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
         new WaitForPivotCheckCommand(),
-        superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT),
-        new WaitForShooterCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
         new WaitCommand(0.5),
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
       )
@@ -227,7 +229,18 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    //return autoChooser.getSelected();
+    return new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
+        //new WaitForPivotCheckCommand(),
+        new WaitCommand(1),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      );
    // return Commands.print("No Auto");
   }
 }
