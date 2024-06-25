@@ -40,6 +40,7 @@ import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
 import frc.robot.subsystems.Superstructure.SuperState;
 
@@ -53,6 +54,7 @@ public class RobotContainer {
   private PivotSubsystem pivot = PivotSubsystem.getInstance();
   private LightsSubsystem lights = LightsSubsystem.getInstance();
   private IntakeSubsystem intake = IntakeSubsystem.getInstance();
+  private VisionSubsystem vision = VisionSubsystem.getInstance();
 
   private Superstructure superstructure = Superstructure.getInstance();
 

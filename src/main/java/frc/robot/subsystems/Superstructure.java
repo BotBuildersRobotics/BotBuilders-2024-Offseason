@@ -15,6 +15,7 @@ public class Superstructure extends SubsystemBase {
     private ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private PivotSubsystem pivot = PivotSubsystem.getInstance();
     private LightsSubsystem leds = LightsSubsystem.getInstance();
+    private VisionSubsystem vision = VisionSubsystem.getInstance();
 
     public static Superstructure mInstance;
 
