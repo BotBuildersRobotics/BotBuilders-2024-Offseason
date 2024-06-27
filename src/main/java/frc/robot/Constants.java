@@ -9,6 +9,10 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
@@ -113,6 +117,17 @@ public class Constants {
 			return config;
 		}
 	}
+
+    public static final class CameraConstants{
+        public static final Transform3d robotToCamera =
+        new Transform3d(
+            // Camera faces back and titled up (yaw 180 and negative pitch from perspective of
+            // robot).
+            // new Translation3d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0, 0.3),
+            new Translation3d(
+                Units.inchesToMeters(10.5), Units.inchesToMeters(10.5), Units.inchesToMeters(8.0)),
+            new Rotation3d(0, Math.toRadians(-16), Math.PI / 4.0));
+    }
 
 	
 }

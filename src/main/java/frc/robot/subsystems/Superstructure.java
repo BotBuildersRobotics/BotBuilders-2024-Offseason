@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,6 +20,9 @@ public class Superstructure extends SubsystemBase {
     private PivotSubsystem pivot = PivotSubsystem.getInstance();
     private LightsSubsystem leds = LightsSubsystem.getInstance();
     private VisionSubsystem vision = VisionSubsystem.getInstance();
+    private CameraSubsystem camera = CameraSubsystem.getInstance();
+
+    private CommandSwerveDrivetrain swerveDriveTrain;
 
     public static Superstructure mInstance;
 
@@ -81,6 +86,13 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = handleStateTransitions();
         SmartDashboard.putString("Super State", currentSuperState.toString());
         applyStates();
+
+        //log and update robot pose
+        var poseResult = camera.getPoseCalculation();
+
+        if(poseResult != null && poseResult.robotPose != null){
+            this.swerveDriveTrain.addVisionMeasurement(poseResult.robotPose, poseResult.timestamp, poseResult.estimationStdDevs);
+        }
 
     }
 
@@ -384,6 +396,16 @@ public class Superstructure extends SubsystemBase {
 
     public Command setWantedSuperStateCommand(SuperState wantedSuperState) {
         return new InstantCommand(() -> setWantedSuperState(wantedSuperState));
+    }
+
+    public void setDriveTrain(CommandSwerveDrivetrain dt){
+        this.swerveDriveTrain = dt;
+    }
+
+    public void addVisionPoseEstimate(Pose2d pose){
+        if(this.swerveDriveTrain != null){
+            this.swerveDriveTrain.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+        }
     }
 
 }
