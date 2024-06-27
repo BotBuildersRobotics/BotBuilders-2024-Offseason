@@ -29,6 +29,7 @@ public class CameraSubsystem  extends SubsystemBase {
     public void periodic(){
 
         io.updateInputs(inputs);
+        
         Logger.processInputs("Camera", inputs);
        
 

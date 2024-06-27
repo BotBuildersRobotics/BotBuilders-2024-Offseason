@@ -18,6 +18,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double AMP_TOP_RPM = 10;
     private static final double AMP_BOTTOM_RPM = 15;
 
+    private double customTopVoltage = 0.0;
+    private double customBottomVoltage = 0.0;
     
     public static ShooterSubsystem mInstance;
 
@@ -39,7 +41,9 @@ public class ShooterSubsystem extends SubsystemBase {
         LONG_SHOT(12.0, 11.5,0,0),
         AMP(1.45, 2.7,0,0),
         PASS(8.0, 8.0,0,0),
+        CUSTOM(0.0,0.0, 0,0),
         REVERSE(-6.0, -6.0,0,0);
+
 
         public double voltage_top;
         public double voltage_bottom;
@@ -80,9 +84,13 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
         // write outputs
-       
-        io.setBottomMotorVoltage(currentState.voltage_bottom);
-        io.setTopMotorVoltage(currentState.voltage_top);
+        if(currentState == ShooterSystemState.CUSTOM){
+            io.setBottomMotorVoltage(customBottomVoltage);
+            io.setTopMotorVoltage(customTopVoltage);
+        }else{
+            io.setBottomMotorVoltage(currentState.voltage_bottom);
+            io.setTopMotorVoltage(currentState.voltage_top);
+        }
 
            
     }
@@ -97,6 +105,10 @@ public class ShooterSubsystem extends SubsystemBase {
                 && MathUtil.isNear(AMP_BOTTOM_RPM, inputs.bottomVelocityRPS, ACCEPTABLE_RPM_ERROR);
     }
 
+    public void setVoltages(double topVoltage, double bottomVoltage){
+        customTopVoltage = topVoltage;
+        customBottomVoltage = bottomVoltage;
+    }
    
 
 

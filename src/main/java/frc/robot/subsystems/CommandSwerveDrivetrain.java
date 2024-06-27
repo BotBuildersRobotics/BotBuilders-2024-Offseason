@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -11,8 +14,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -80,6 +85,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             new ReplanningConfig()),
             () -> DriverStation.getAlliance().orElse(Alliance.Blue)==Alliance.Red, // Assume the path needs to be flipped for Red vs Blue, this is normally the case
             this); // Subsystem for requirements
+
+        PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+        
+        PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
     }
 
     public Command getAutoPath(String pathName) {
@@ -104,6 +120,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    /** Returns the current odometry pose. */
+    @AutoLogOutput(key = "Odometry/Robot")
+    public Pose2d getPose() {
+        return this.m_odometry.getEstimatedPosition();
     }
 
     @Override

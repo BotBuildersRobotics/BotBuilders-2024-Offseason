@@ -42,7 +42,8 @@ public class Superstructure extends SubsystemBase {
         SUB,
         PASS,
         LONG,
-        SPEAKER
+        SPEAKER,
+        AUTO
     }
 
     public enum SuperState {
@@ -236,8 +237,9 @@ public class Superstructure extends SubsystemBase {
 
     private void handleAutoShot(){
         double targetMetres = vision.getHorizontalDistanceToTargetMeters();
-        double visionAngle = RegressionMap.kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
+        double visionAngle = RegressionMap.kPivotAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
         //do a lookup in our lookup Table, interoplate as needed
+        shotPrep = ShotPrepType.AUTO;
         pivot.setAngle(visionAngle);
     }
 
@@ -336,7 +338,17 @@ public class Superstructure extends SubsystemBase {
         else if(this.shotPrep == ShotPrepType.SUB){
              shooter.setWantedState(ShooterSystemState.SHOOT);
         }
-        else{
+        else if(this.shotPrep == ShotPrepType.AUTO)
+        {
+            double targetMetres = vision.getHorizontalDistanceToTargetMeters();
+            double topRollerVoltage = RegressionMap.kTopRollerAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
+            double bottomRollerVoltage = RegressionMap.kBottomRollerAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
+
+            shooter.setVoltages(topRollerVoltage,bottomRollerVoltage );
+            shooter.setWantedState(ShooterSystemState.CUSTOM);
+        }
+        else
+        {
             shooter.setWantedState(ShooterSystemState.LONG_SHOT);
         }
         //intake.setWantedState(IntakeSystemState.FEEDING);

@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -60,7 +62,7 @@ public class RobotContainer {
 
   private final OperatorDashboard dashboard;
 
-  private SendableChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
 
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -232,12 +234,13 @@ public class RobotContainer {
     );
 
     //Build the autos from pathplanner
-    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
 
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return autoChooser.get();
    /*  return new SequentialCommandGroup(
         
         superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),

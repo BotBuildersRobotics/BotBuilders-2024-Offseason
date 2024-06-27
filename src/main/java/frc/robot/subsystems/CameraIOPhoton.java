@@ -29,6 +29,8 @@ public class CameraIOPhoton implements CameraIO{
     protected Transform3d robotToCam;
     private double lastEstTimestamp = 0;
 
+    PoseCalcResult result = new PoseCalcResult();
+
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
@@ -45,18 +47,12 @@ public class CameraIOPhoton implements CameraIO{
 
     @Override
     public void updateInputs(CameraIOInputs inputs) {
-        // Query the latest result from PhotonVision
-       /*  var visionEst = getEstimatedGlobalPose();
-
-        if(visionEst != null){
-
-            inputs.robotPose = visionEst.get().estimatedPose.toPose2d();
-            inputs.timestamp = camera.getLatestResult().getTimestampSeconds();
-           
-            //can't log std dev
-           // var estStdDevs = getEstimationStdDevs(visionEst.get().estimatedPose.toPose2d());
-           // inputs.stdDevs = estStdDevs;
-        }*/
+       
+        if(result.robotPose != null){
+            inputs.robotPose = result.robotPose;
+        }
+        inputs.poseDetected = result.found;
+        
 
     }
 
@@ -106,7 +102,7 @@ public class CameraIOPhoton implements CameraIO{
 
     public PoseCalcResult getEstimatedPose(){
 
-            var result = new PoseCalcResult();
+            
             var robotPose = getEstimatedGlobalPose();
             if(robotPose.isPresent()){
                 result.estimationStdDevs = getEstimationStdDevs(robotPose.get().estimatedPose.toPose2d());
