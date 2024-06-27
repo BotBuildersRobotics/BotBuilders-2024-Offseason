@@ -46,7 +46,7 @@ public class CameraIOPhoton implements CameraIO{
     @Override
     public void updateInputs(CameraIOInputs inputs) {
         // Query the latest result from PhotonVision
-        var visionEst = getEstimatedGlobalPose();
+       /*  var visionEst = getEstimatedGlobalPose();
 
         if(visionEst != null){
 
@@ -56,7 +56,7 @@ public class CameraIOPhoton implements CameraIO{
             //can't log std dev
            // var estStdDevs = getEstimationStdDevs(visionEst.get().estimatedPose.toPose2d());
            // inputs.stdDevs = estStdDevs;
-        }
+        }*/
 
     }
 
@@ -108,9 +108,14 @@ public class CameraIOPhoton implements CameraIO{
 
             var result = new PoseCalcResult();
             var robotPose = getEstimatedGlobalPose();
-            result.estimationStdDevs = getEstimationStdDevs(robotPose.get().estimatedPose.toPose2d());
-            result.robotPose = robotPose.get().estimatedPose.toPose2d();
-            result.timestamp = camera.getLatestResult().getTimestampSeconds();
+            if(robotPose.isPresent()){
+                result.estimationStdDevs = getEstimationStdDevs(robotPose.get().estimatedPose.toPose2d());
+                result.robotPose = robotPose.get().estimatedPose.toPose2d();
+                result.timestamp = camera.getLatestResult().getTimestampSeconds();
+                result.found = true;
+            }else{
+                result.found = false;
+            }
             return result;
 
     }

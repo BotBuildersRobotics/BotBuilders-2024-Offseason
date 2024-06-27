@@ -90,7 +90,7 @@ public class Superstructure extends SubsystemBase {
         //log and update robot pose
         var poseResult = camera.getPoseCalculation();
 
-        if(poseResult != null && poseResult.robotPose != null){
+        if(poseResult != null && poseResult.found){
             this.swerveDriveTrain.addVisionMeasurement(poseResult.robotPose, poseResult.timestamp, poseResult.estimationStdDevs);
         }
 

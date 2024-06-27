@@ -23,6 +23,7 @@ public interface CameraIO {
         public boolean hasTargets = false;
         public Pose2d robotPose = new Pose2d();
         public double timestamp = 0.0;
+        
        
        
     }

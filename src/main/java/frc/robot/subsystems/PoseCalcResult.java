@@ -10,4 +10,5 @@ public class PoseCalcResult {
     public Matrix<N3, N1> estimationStdDevs;
     public Pose2d robotPose;
     public double timestamp;
+    public boolean found;
 }
