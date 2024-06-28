@@ -5,8 +5,8 @@ public class LimelightConfiguration {
     public String Name = "limelight";
     public double LimelightMountingRollRadians = 0;
     public double LimelightMountingYawRadians = 0;
-    public double LimelightMountingPitchRadians = 0;
-    public double LimelightHeightOffsetMeters = 0;
+    public double LimelightMountingPitchRadians = 0.69; // 40 degrees ?
+    public double LimelightHeightOffsetMeters = 0.2;
     public double LimelightLengthOffsetMeters = 0;
     public double LimelightWidthOffsetMeters = 0;
 
