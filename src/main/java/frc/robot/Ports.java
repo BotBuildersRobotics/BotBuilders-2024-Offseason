@@ -28,6 +28,7 @@ public class Ports {
 	public static final int PIGEON = 13;
 
 	public static final int INTAKE_BEAMBREAK = 1;
+	public static final int INTAKE_BEAMBREAKTWO = 2;
 
 	// spotless:on
 

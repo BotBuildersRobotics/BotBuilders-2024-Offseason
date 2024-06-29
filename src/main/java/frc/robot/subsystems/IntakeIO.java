@@ -25,6 +25,7 @@ public interface IntakeIO {
         public double feederVoltage = 0.0;
         
         public boolean beamBreakTripped = false;
+        public boolean beamBreakTwoTripped = false;
         
 
     }

@@ -107,6 +107,10 @@ public class RobotContainer {
     //ACCEPT THE NOTE - RUMBLE WHEN IN
     operatorControl.rightTrigger()
       .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
+      .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
+
+    /*operatorControl.rightTrigger()
+      .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
       .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE))
       .whileTrue
       (
@@ -147,7 +151,7 @@ public class RobotContainer {
             )
           )
         )
-        );
+        );*/
         
 
     //SPIT OUT THE NOTE                          
@@ -230,6 +234,13 @@ public class RobotContainer {
         superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
         new WaitCommand(0.5),
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
+    NamedCommands.registerCommand("Intake", 
+      new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.INTAKE)
       )
     );
 

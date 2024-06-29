@@ -27,6 +27,9 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     private TalonFX feederRoller;
 
     private final DigitalInput beamBreakSensor;
+    private final DigitalInput beamBreakSensorTwo;
+
+    
 
     private final VoltageOut frontRequest = new VoltageOut(0.0, true, false, false, false);
     private final VoltageOut rearRequest = new VoltageOut(0.0, true, false, false, false);
@@ -59,6 +62,7 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     feederRoller.getConfigurator().apply(motionMagic);
 
     beamBreakSensor = new DigitalInput(Ports.INTAKE_BEAMBREAK);
+    beamBreakSensorTwo = new DigitalInput(Ports.INTAKE_BEAMBREAKTWO);
 
   }
 
@@ -82,6 +86,7 @@ public class IntakeIOPhoenix6 implements IntakeIO{
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.beamBreakTripped = !beamBreakSensor.get();
+        inputs.beamBreakTwoTripped = !beamBreakSensorTwo.get();
         inputs.frontMotorConnected = BaseStatusSignal.refreshAll(
                         frontRoller.getMotorVoltage(),
                         frontRoller.getSupplyCurrent(),

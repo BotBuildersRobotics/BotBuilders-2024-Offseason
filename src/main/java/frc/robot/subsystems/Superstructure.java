@@ -239,6 +239,8 @@ public class Superstructure extends SubsystemBase {
         double targetMetres = vision.getHorizontalDistanceToTargetMeters();
         double visionAngle = RegressionMap.kPivotAutoAimMap.getInterpolated(new InterpolatingDouble(targetMetres)).value;
         //do a lookup in our lookup Table, interoplate as needed
+        SmartDashboard.putNumber("target M",targetMetres);
+        SmartDashboard.putNumber("vision A",visionAngle);
         shotPrep = ShotPrepType.AUTO;
         pivot.setAngle(visionAngle);
     }
@@ -356,8 +358,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void handleFeeding(){
-        intake.setWantedState(IntakeSystemState.FEEDING);
-        
+        if(this.shotPrep == ShotPrepType.AMP){
+            intake.setWantedState(IntakeSystemState.AMPFEEDING);
+        } else {
+            intake.setWantedState(IntakeSystemState.FEEDING);
+        }
     }
 
     private void handleManualShot(){

@@ -15,7 +15,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double TOP_SHOT_RPM = 90;
     private static final double BOTTOM_SHOT_RPM = 90;
 
-    private static final double AMP_TOP_RPM = 10;
+    private static final double AMP_TOP_RPM = 2;
     private static final double AMP_BOTTOM_RPM = 15;
 
     private double customTopVoltage = 0.0;
@@ -39,7 +39,7 @@ public class ShooterSubsystem extends SubsystemBase {
         IDLE(0.0, 0.0,0,0),
         SHOOT(12.0, 12.0,0,0),
         LONG_SHOT(12.0, 11.5,0,0),
-        AMP(1.45, 2.7,0,0),
+        AMP(0.75,2.75,0,0),
         PASS(8.0, 8.0,0,0),
         CUSTOM(0.0,0.0, 0,0),
         REVERSE(-6.0, -6.0,0,0);

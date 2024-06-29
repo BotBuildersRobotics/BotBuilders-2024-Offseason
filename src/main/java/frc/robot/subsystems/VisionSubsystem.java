@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.FieldConstants;
 import frc.robot.lib.LimelightConfiguration;
@@ -60,6 +61,8 @@ public class VisionSubsystem extends SubsystemBase {
         cameraToAprilTagPose = null;
         horizontalDistanceToTargetMeters = Double.NaN;
 
+       
+
         if (hasTargets()) {
             // Calculate total pitch of camera. It is a combination of the ty value and the mounting angle of the LL.
             double theta = getPitchRadians() + limelightConfiguration.LimelightMountingPitchRadians;
@@ -74,6 +77,7 @@ public class VisionSubsystem extends SubsystemBase {
                 // Finds horizontal distance from camera to target.
                 horizontalDistanceToTargetMeters = heightFromRobotToTargetMeters / Math.tan(theta);
 
+                SmartDashboard.putNumber("Distance", horizontalDistanceToTargetMeters);
                 // Get Camera to Tag pose
                 cameraToAprilTagPose = new Pose2d(
                         getHorizontalDistanceToTargetMeters() * Math.cos(getYawRadians()),

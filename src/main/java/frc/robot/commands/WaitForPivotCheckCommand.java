@@ -20,12 +20,13 @@ public class WaitForPivotCheckCommand extends Command{
     DoubleSupplier desiredAngle;
 
     public void WaitForPivotCheckCommand(){
-         this.desiredAngle =()  -> 30;
+         
+        // this.desiredAngle =()  -> 30;
     }
    
     public void WaitForPivotCheckCommand(double angle){
 
-        this.desiredAngle =()  -> angle;
+       // this.desiredAngle =()  -> angle;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class WaitForPivotCheckCommand extends Command{
 
     @Override
     public void execute() {
-        shooterIsAtSpeed = superStructure.isPivotAtAngle(desiredAngle.getAsDouble());
+        shooterIsAtSpeed = superStructure.isPivotAtAngle(30);
     }
 
     @Override

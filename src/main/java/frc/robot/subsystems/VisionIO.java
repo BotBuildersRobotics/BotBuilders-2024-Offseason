@@ -36,6 +36,8 @@ default void updateInputs(VisionIOInputs inputs) {}
          * TagID of target fiducial marker.
          */
         public int tagId = -1;
+
+        public double distanceToTarget = 0.0;
     }
 
 }

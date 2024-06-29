@@ -41,7 +41,8 @@ public class IntakeSubsystem extends SubsystemBase {
 		REVERSE(-6.0, -6.0, -5),
     STAGED(0.0,0.0,0.0),
     FEEDING(6.0,6.0,12),
-    SHUFFLE(0,0,0);
+    SHUFFLE(-6,-6,-6),
+    AMPFEEDING(3,3,5);
 
 		public double roller_voltage_front;
     public double roller_voltage_rear;
@@ -85,29 +86,23 @@ public class IntakeSubsystem extends SubsystemBase {
         currentState = IntakeSystemState.IDLE;
     }
     
-    if(isBeamBreakTripped() && (currentState != IntakeSystemState.FEEDING && currentState != IntakeSystemState.SHUFFLE))
+    if(isBeamBreakTwoTripped() && (currentState != IntakeSystemState.FEEDING && currentState != IntakeSystemState.SHUFFLE))
+    {
+       //if the second beam break is tripped, we have a note in the intake. Now it will be shuffled.
+       
+        currentState = IntakeSystemState.SHUFFLE;
+    }
+   
+    io.setFrontMotorVoltage(currentState.roller_voltage_rear);
+    io.setRearMotorVoltage(currentState.roller_voltage_rear);
+    io.setFeederMotorVoltage(currentState.feeder_voltage);
+    
+     if(isBeamBreakTripped() && (currentState != IntakeSystemState.SHUFFLE))
     {
        //if the beam break is tripped, we have a note in the intake, it needs to be sent out first.
        
         currentState = IntakeSystemState.STAGED;
-
     }
-
-
-    if(currentState == IntakeSystemState.SHUFFLE || currentState == IntakeSystemState.STAGED)
-    {
-        io.setFrontMotorVoltage(0);
-        io.setRearMotorVoltage(0);
-        io.setFeederMotorVoltage(0);
-    }
-    else
-    {
-      io.setFrontMotorVoltage(currentState.roller_voltage_rear);
-      io.setRearMotorVoltage(currentState.roller_voltage_rear);
-      io.setFeederMotorVoltage(currentState.feeder_voltage);
-    }
-    
-
   }
 
   public void startIntake(){
@@ -117,6 +112,10 @@ public class IntakeSubsystem extends SubsystemBase {
   /** Returns true if the beam break is tripped */
   public boolean isBeamBreakTripped() {
       return inputs.beamBreakTripped;
+  }
+
+  public boolean isBeamBreakTwoTripped() {
+      return inputs.beamBreakTwoTripped;
   }
 
   public void SetFeederRotations(int rotations){
