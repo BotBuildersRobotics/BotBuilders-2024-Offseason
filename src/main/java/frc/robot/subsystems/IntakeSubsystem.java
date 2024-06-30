@@ -42,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     STAGED(0.0,0.0,0.0),
     FEEDING(6.0,6.0,12),
     SHUFFLE(0,-8,-8),
-    INTAKE_COMPLETE(-6,0,0),
+    INTAKE_COMPLETE(0,0,0),
     AMPFEEDING(3,3,5);
 
 		public double roller_voltage_front;
