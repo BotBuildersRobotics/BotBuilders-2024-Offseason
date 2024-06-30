@@ -57,8 +57,7 @@ public class Superstructure extends SubsystemBase {
         MANUAL_SHOT,
         AUTO_SHOT,
         INTAKE,
-        STAGE,
-        SHUFFLE,
+        INTAKE_COMPLETE,
         FEEDING,
         OUTTAKE,
         CONTROLLED_SHOT,
@@ -118,14 +117,11 @@ public class Superstructure extends SubsystemBase {
              case SPEAKER_SHOT:
                 currentSuperState = SuperState.SPEAKER_SHOT;
                 break;
-            case SHUFFLE: 
-                 currentSuperState = SuperState.SHUFFLE;
-                break;
             case FEEDING:
                 currentSuperState = SuperState.FEEDING;
                 break;
-            case STAGE:
-                currentSuperState = SuperState.STAGE;
+            case INTAKE_COMPLETE:
+                currentSuperState = SuperState.INTAKE_COMPLETE;
                 break;
             case MANUAL_SHOT:
                 currentSuperState = SuperState.MANUAL_SHOT;
@@ -152,9 +148,7 @@ public class Superstructure extends SubsystemBase {
                  currentSuperState = SuperState.LONG_PASS_SHOT;
                  break;
             case INTAKE:
-               
-                currentSuperState = intake.isBeamBreakTripped() ? SuperState.SHUFFLE : SuperState.INTAKE;
-               
+                currentSuperState = intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE ? SuperState.INTAKE_COMPLETE : SuperState.INTAKE;   
                 break;
             case IDLE:
                 default:
@@ -178,11 +172,8 @@ public class Superstructure extends SubsystemBase {
             case AUTO_SHOT:
                 handleAutoShot();
                 break;
-            case SHUFFLE:
-                handleShuffle();
-                break;
-            case STAGE: //this is when the note is at the beam break
-                handleStaged();
+            case INTAKE_COMPLETE: //this is when the note is at the beam break
+                handleCompleteIntake();
                 break;
             case FEEDING: //this is us feeding the note into the shooter
                 handleFeeding();
@@ -267,10 +258,6 @@ public class Superstructure extends SubsystemBase {
        // leds.setStrobeState(LightState.RAINBOW);
         pivot.setWantedState(PivotSystemState.SUBWOOFER);
         shotPrep = ShotPrepType.SUB;
-    }
-
-    private void handleShuffle(){
-        
     }
 
     private void handleReadyForAmp(){
@@ -369,7 +356,7 @@ public class Superstructure extends SubsystemBase {
         shooter.setWantedState(ShooterSystemState.SHOOT);
     }
 
-    private void handleStaged()
+    private void handleCompleteIntake()
     {
         leds.setState(LightState.GREEN);
         intake.setWantedState(IntakeSystemState.STAGED);

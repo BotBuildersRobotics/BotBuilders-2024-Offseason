@@ -107,51 +107,30 @@ public class RobotContainer {
     //ACCEPT THE NOTE - RUMBLE WHEN IN
     operatorControl.rightTrigger()
       .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
-      .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE));
-
-    /*operatorControl.rightTrigger()
-      .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
       .onFalse(superstructure.setWantedSuperStateCommand(SuperState.IDLE))
       .whileTrue
       (
         new RepeatCommand(
           new SequentialCommandGroup
           (
-             new ConditionalCommand
-            (
-                new SequentialCommandGroup
-                (
-                   
-                    new InstantCommand( () -> intake.RunFeederVoltage(-6)), //Run in reverse to help clear note jams
-                    new InstantCommand(() -> intake.RunFrontRollerVoltage(-6)),
-                    new InstantCommand(() -> intake.RunCounterVoltage(-6)),
-                    new WaitCommand(0.5),  //run just for a small period of time
-                    superstructure.setWantedSuperStateCommand(SuperState.STAGE)
-                ),
-                new SequentialCommandGroup
-                (
-                 // new WaitCommand(0.5),
-                  superstructure.setWantedSuperStateCommand(SuperState.INTAKE)
-                ),
-                () -> intake.getCurrentState() == IntakeSystemState.STAGED
-            ),
+            
             new SequentialCommandGroup 
             (
                   //new WaitCommand(0.2),
                   new ControllerRumbleCommand
                   (
                         driverControl, 
-                       () -> intake.getCurrentState() == IntakeSystemState.STAGED
+                       () -> intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE
                   ),
                   new ControllerRumbleCommand
                   (
                         operatorControl, 
-                        () -> intake.getCurrentState() == IntakeSystemState.STAGED
+                        () -> intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE
                   )
             )
           )
         )
-        );*/
+        );
         
 
     //SPIT OUT THE NOTE                          
@@ -227,7 +206,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutoShoot", 
       new SequentialCommandGroup(
         
-        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
+        superstructure.setWantedSuperStateCommand(SuperState.AUTO_SHOT),
         new WaitForPivotCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
         new WaitForShooterCheckCommand(),
@@ -239,8 +218,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Intake", 
       new SequentialCommandGroup(
-        
         superstructure.setWantedSuperStateCommand(SuperState.INTAKE)
+
       )
     );
 

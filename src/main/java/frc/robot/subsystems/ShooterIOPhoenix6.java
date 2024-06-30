@@ -48,7 +48,7 @@ public class ShooterIOPhoenix6 implements ShooterIO {
         
 
         motionMagicConfigs = new MotionMagicConfigs();
-        motionMagicConfigs.MotionMagicAcceleration = 80;
+        motionMagicConfigs.MotionMagicAcceleration = 0;
         motionMagicConfigs.MotionMagicCruiseVelocity = 0;
         motionMagicConfigs.MotionMagicJerk = 0;
 
