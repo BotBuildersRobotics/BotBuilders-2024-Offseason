@@ -164,6 +164,7 @@ public class PivotIOPhoenix6 implements PivotIO{
         inputs.rightTemperature = follower.getDeviceTemp().getValueAsDouble();
         inputs.rightVelocityRPS = follower.getVelocity().getValueAsDouble();
         inputs.rightPosition = follower.getMotorVoltage().getValueAsDouble();
+        inputs.setpoint = setpoint;
         
     }
 

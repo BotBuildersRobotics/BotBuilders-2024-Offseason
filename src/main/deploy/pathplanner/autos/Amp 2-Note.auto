@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left 2-Note"
+            "pathName": "Amp -- Amp Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot"
+            "name": "AutoShoot2"
           }
         }
       ]

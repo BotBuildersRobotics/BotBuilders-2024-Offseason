@@ -1,0 +1,85 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4,
+      "y": 5.55
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Centre -- Centre Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Centre Note -- Amp Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Note -- Far Amp Mid Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far Amp Mid Note -- Amp Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "4-Note Auto",
+  "choreoAuto": false
+}

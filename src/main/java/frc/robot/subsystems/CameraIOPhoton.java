@@ -37,7 +37,7 @@ public class CameraIOPhoton implements CameraIO{
 
     public CameraIOPhoton(){
 
-        camera = new PhotonCamera("photonvision");
+        camera = new PhotonCamera("BotBuilders");
 
         robotToCam = Constants.CameraConstants.robotToCamera;
         estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);

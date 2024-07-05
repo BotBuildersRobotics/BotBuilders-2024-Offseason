@@ -5,23 +5,26 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Superstructure;
 
 public class WaitForPivotCheckCommand extends Command{
     
     
     public Superstructure superStructure = Superstructure.getInstance();
+    
 
     private final Timer timer = new Timer();
     private static final double DURATION = 1;
 
-    private boolean shooterIsAtSpeed = false;
+    private boolean pivotAtSetpoint = false;
 
     DoubleSupplier desiredAngle;
 
     public void WaitForPivotCheckCommand(){
          
         // this.desiredAngle =()  -> 30;
+       
     }
    
     public void WaitForPivotCheckCommand(double angle){
@@ -36,7 +39,7 @@ public class WaitForPivotCheckCommand extends Command{
 
     @Override
     public void execute() {
-        shooterIsAtSpeed = superStructure.isPivotAtAngle(30);
+        pivotAtSetpoint = superStructure.isPivotAtAngle(30);
     }
 
     @Override
@@ -52,6 +55,6 @@ public class WaitForPivotCheckCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        return timer.hasElapsed(DURATION) || shooterIsAtSpeed;
+        return timer.hasElapsed(DURATION) || pivotAtSetpoint;
     }
 }

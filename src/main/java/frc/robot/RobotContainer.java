@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Drive.AprilTagLateralSource;
 import frc.robot.Drive.AprilTagRotationSource;
 import frc.robot.commands.ControllerRumbleCommand;
+import frc.robot.commands.PivotCommand;
 import frc.robot.commands.WaitForPivotCheckCommand;
 import frc.robot.commands.WaitForShooterCheckCommand;
 import frc.robot.generated.TunerConstants;
@@ -184,7 +185,7 @@ public class RobotContainer {
     
     //DRIVER CAN MOVE LATERALLY TO the AMP, based on April Tag
 
-    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  - aprilTagLateral.getLateral() *  1.1))); //TODO Tune
+    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  - aprilTagLateral.getLateral() *  1.8))); //TODO Tune
 
     // reset the field-centric heading on left bumper press
     driverControl.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -202,11 +203,53 @@ public class RobotContainer {
     configureBindings();
 
     
-
+    //thought: Could we have AutoShoot1 , AutoShoot2, AutoShoot3
+    //but change the Auto shot pivot to a set pivot amount
     NamedCommands.registerCommand("AutoShoot", 
       new SequentialCommandGroup(
         
         superstructure.setWantedSuperStateCommand(SuperState.AUTO_SHOT),
+       // new PivotCommand(pivot,() -> 30),
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
+    NamedCommands.registerCommand("AutoShoot1", 
+      new SequentialCommandGroup(
+        
+        new PivotCommand(pivot,() -> 35),
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
+    NamedCommands.registerCommand("AutoShoot2", 
+      new SequentialCommandGroup(
+        
+        new PivotCommand(pivot,() -> 36),
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
+    NamedCommands.registerCommand("AutoShoot3", 
+      new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.AUTO_SHOT),
+       // new PivotCommand(pivot,() -> 30),
         new WaitForPivotCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
         new WaitForShooterCheckCommand(),

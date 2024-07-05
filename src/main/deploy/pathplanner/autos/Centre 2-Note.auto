@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Centre 2-Note"
+            "pathName": "Centre -- Centre Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot"
+            "name": "AutoShoot1"
           }
         }
       ]

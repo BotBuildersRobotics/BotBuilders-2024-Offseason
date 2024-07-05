@@ -83,6 +83,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.hasTargets = this.hasTargets;
         inputs.botpose = this.botpose;
         inputs.tagId = (int) this.tagId;
+        
     }
 
     @Override

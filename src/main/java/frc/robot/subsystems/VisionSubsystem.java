@@ -56,6 +56,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         // Updates limelight inputs
         visionIO.updateInputs(inputs);
+        inputs.distanceToTarget = this.horizontalDistanceToTargetMeters;
         Logger.processInputs(limelightConfiguration.Name, inputs);
 
         cameraToAprilTagPose = null;

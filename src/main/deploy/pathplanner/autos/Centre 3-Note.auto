@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Centre 2-Note"
+            "pathName": "Centre -- Centre Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot"
+            "name": "AutoShoot1"
           }
         },
         {
@@ -44,18 +44,18 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SimpleForwardPt2"
+            "pathName": "Centre Note -- Amp Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot"
+            "name": "AutoShoot2"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "3-Note Autos",
   "choreoAuto": false
 }

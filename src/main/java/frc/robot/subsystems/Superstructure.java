@@ -297,7 +297,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean isPivotAtAngle(double angle){
-        if(angle >= pivot.getCurrentPosition()){
+        if(angle >= pivot.getPivotAngle()){//getCurrentPosition()){
             return true;
         }
         else{
@@ -359,7 +359,7 @@ public class Superstructure extends SubsystemBase {
     private void handleCompleteIntake()
     {
         leds.setState(LightState.GREEN);
-        intake.setWantedState(IntakeSystemState.STAGED);
+        
         
     }
     private void handleIdle(){
@@ -375,6 +375,11 @@ public class Superstructure extends SubsystemBase {
         pivot.setWantedState(PivotSystemState.INTAKE);
         if(pivot.getPivotAngle() > 30){ //only start the intake once the pivot is greater 30 degrees
             intake.setWantedState(IntakeSystemState.INTAKE);
+        }
+
+        //if the intake is at any other stage, lets make the lights green.
+        if(intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE || intake.getCurrentState() == IntakeSystemState.SHUFFLE || intake.getCurrentState() == IntakeSystemState.SHUFFLE){
+             leds.setState(LightState.GREEN);
         }
     }
 
