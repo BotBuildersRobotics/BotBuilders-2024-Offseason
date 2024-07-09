@@ -51,6 +51,8 @@ public class Superstructure extends SubsystemBase {
         AMP_SHOT,
         SPEAKER_SHOT,
         SUBWOOFER_SHOT,
+        THIRTYFIVE_SHOT,
+        THIRTYSIX_SHOT,
         LONG_PASS_SHOT,
         AUTO_AIM_SHOOTER,
         STOW_PIVOT,
@@ -144,6 +146,12 @@ public class Superstructure extends SubsystemBase {
             case SUBWOOFER_SHOT:
                  currentSuperState = SuperState.SUBWOOFER_SHOT;
                  break;
+            case THIRTYFIVE_SHOT:
+                 currentSuperState = SuperState.THIRTYFIVE_SHOT;
+                 break;
+            case THIRTYSIX_SHOT:
+                 currentSuperState = SuperState.THIRTYSIX_SHOT;
+                 break;
             case LONG_PASS_SHOT:
                  currentSuperState = SuperState.LONG_PASS_SHOT;
                  break;
@@ -200,9 +208,18 @@ public class Superstructure extends SubsystemBase {
                 handleSubwooferShot();
                 break;
 
+            case THIRTYFIVE_SHOT:
+                handleThirtyFiveShot();
+                break;
+
+            case THIRTYSIX_SHOT:
+                handleThirtySixShot();
+                break;
+
             case READY_FOR_AMP_SHOT:
                 handleReadyForAmp();
                 break;
+
             case MOVE_PIVOT_TO_STOW:
                 handleMovePivotToStow();
                 break;
@@ -257,6 +274,18 @@ public class Superstructure extends SubsystemBase {
     public void handleSubwooferShot(){
        // leds.setStrobeState(LightState.RAINBOW);
         pivot.setWantedState(PivotSystemState.SUBWOOFER);
+        shotPrep = ShotPrepType.SUB;
+    }
+
+    public void handleThirtyFiveShot(){
+       // leds.setStrobeState(LightState.RAINBOW);
+        pivot.setWantedState(PivotSystemState.THIRTYFIVE);
+        shotPrep = ShotPrepType.SUB;
+    }
+
+    public void handleThirtySixShot(){
+       // leds.setStrobeState(LightState.RAINBOW);
+        pivot.setWantedState(PivotSystemState.THIRTYSIX);
         shotPrep = ShotPrepType.SUB;
     }
 
@@ -378,7 +407,7 @@ public class Superstructure extends SubsystemBase {
         }
 
         //if the intake is at any other stage, lets make the lights green.
-        if(intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE || intake.getCurrentState() == IntakeSystemState.SHUFFLE || intake.getCurrentState() == IntakeSystemState.SHUFFLE){
+        if(intake.getCurrentState() == IntakeSystemState.INTAKE_COMPLETE || intake.getCurrentState() == IntakeSystemState.SHUFFLE){
              leds.setState(LightState.GREEN);
         }
     }

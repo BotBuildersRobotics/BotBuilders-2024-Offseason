@@ -40,6 +40,8 @@ public class PivotSubsystem extends SubsystemBase {
         SPEAKER(18),
         STOW(0),
         SUBWOOFER(33),
+        THIRTYFIVE(22),
+        THIRTYSIX(22),
         LONG_RANGE(19),
         LOW_PASS(20),
         CUSTOM(0);

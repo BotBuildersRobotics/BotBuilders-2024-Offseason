@@ -8,7 +8,8 @@
   "autoFolders": [
     "2-Note Autos",
     "3-Note Autos",
-    "4-Note Auto"
+    "4-Note Auto",
+    "1-Note Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

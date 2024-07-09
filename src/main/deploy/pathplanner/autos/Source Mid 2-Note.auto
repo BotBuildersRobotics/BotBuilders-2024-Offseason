@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 4.35
+      "x": 0.8,
+      "y": 4.4
     },
     "rotation": -60.0
   },
@@ -26,13 +26,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source -- Source Note"
+            "pathName": "Source -- Source Leave"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Leave -- Far Source Mid Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot2"
+            "name": "Wait"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far Source Mid Note -- Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SubwooferShot"
           }
         }
       ]

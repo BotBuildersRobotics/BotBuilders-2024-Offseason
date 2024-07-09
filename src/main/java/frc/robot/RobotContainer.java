@@ -219,10 +219,23 @@ public class RobotContainer {
       )
     );
 
+    NamedCommands.registerCommand("SubwooferShot", 
+      new SequentialCommandGroup(
+        
+        superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT),
+        new WaitForPivotCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
+        new WaitForShooterCheckCommand(),
+        superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
+        new WaitCommand(0.5),
+        superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
     NamedCommands.registerCommand("AutoShoot1", 
       new SequentialCommandGroup(
         
-        new PivotCommand(pivot,() -> 35),
+        superstructure.setWantedSuperStateCommand(SuperState.THIRTYFIVE_SHOT),
         new WaitForPivotCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
         new WaitForShooterCheckCommand(),
@@ -235,7 +248,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutoShoot2", 
       new SequentialCommandGroup(
         
-        new PivotCommand(pivot,() -> 36),
+        superstructure.setWantedSuperStateCommand(SuperState.THIRTYSIX_SHOT),
         new WaitForPivotCheckCommand(),
         superstructure.setWantedSuperStateCommand(SuperState.READY_FOR_SHOT),
         new WaitForShooterCheckCommand(),
@@ -256,6 +269,13 @@ public class RobotContainer {
         superstructure.setWantedSuperStateCommand(SuperState.FEEDING),
         new WaitCommand(0.5),
         superstructure.setWantedSuperStateCommand(SuperState.IDLE)
+      )
+    );
+
+    NamedCommands.registerCommand("Wait",
+      new SequentialCommandGroup(
+       
+        new WaitCommand(0.5)
       )
     );
 

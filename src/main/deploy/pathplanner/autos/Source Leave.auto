@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 4.35
+      "x": 0.8,
+      "y": 4.4
     },
     "rotation": -60.0
   },
@@ -18,26 +18,14 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Source -- Source Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoShoot2"
+            "pathName": "Source -- Source Leave"
           }
         }
       ]
     }
   },
-  "folder": "2-Note Autos",
+  "folder": "1-Note Autos",
   "choreoAuto": false
 }
