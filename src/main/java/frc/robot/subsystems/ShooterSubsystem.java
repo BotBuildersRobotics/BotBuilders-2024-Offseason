@@ -38,6 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public enum ShooterSystemState {
         IDLE(0.0, 0.0,0,0),
         SHOOT(12.0, 12.0,0,0),
+        WEAK(5,5,0,0),
         LONG_SHOT(12.0, 11.5,0,0),
         AMP(0.75,2.75,0,0),
         PASS(8.0, 8.0,0,0),

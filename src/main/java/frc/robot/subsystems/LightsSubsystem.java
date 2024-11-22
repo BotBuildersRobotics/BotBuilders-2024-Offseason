@@ -30,6 +30,8 @@ public class LightsSubsystem extends SubsystemBase {
         led = new CANdle(Ports.LEDS.getDeviceNumber(), Ports.LEDS.getBus());
     }
 
+
+
     public void setState(LightState state){
 
         //set the candle color
@@ -54,6 +56,8 @@ public class LightsSubsystem extends SubsystemBase {
 
     public void setStrobeState(LightState state){
 
+        led.configBrightnessScalar(0.6);
+        
         if(state == LightState.RED){
             led.animate(new StrobeAnimation(255, 0, 0));
         }
@@ -86,6 +90,10 @@ public class LightsSubsystem extends SubsystemBase {
         if(state == LightState.COLOR_FLOW_BLUE){
              led.animate(new ColorFlowAnimation(0,0,255));
         }
+        if(state == LightState.OFF){
+            led.setLEDs(0, 0, 0);
+           led.configBrightnessScalar(0);
+        }
 
 
 
@@ -100,7 +108,8 @@ public class LightsSubsystem extends SubsystemBase {
         RAINBOW,
         COLOR_FLOW_RED,
         COLOR_FLOW_GREEN,
-        COLOR_FLOW_BLUE
+        COLOR_FLOW_BLUE,
+        OFF
 
     }
 }

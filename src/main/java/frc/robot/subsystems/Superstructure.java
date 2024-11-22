@@ -40,6 +40,7 @@ public class Superstructure extends SubsystemBase {
     public enum ShotPrepType{
         AMP,
         SUB,
+        WEAK,
         PASS,
         LONG,
         SPEAKER,
@@ -49,6 +50,7 @@ public class Superstructure extends SubsystemBase {
     public enum SuperState {
         IDLE,
         AMP_SHOT,
+        WEAK_SHOT,
         SPEAKER_SHOT,
         SUBWOOFER_SHOT,
         THIRTYFIVE_SHOT,
@@ -115,6 +117,9 @@ public class Superstructure extends SubsystemBase {
                 break;
             case AMP_SHOT:
                 currentSuperState = SuperState.AMP_SHOT;
+                break;
+            case WEAK_SHOT:
+                currentSuperState = SuperState.WEAK_SHOT;
                 break;
              case SPEAKER_SHOT:
                 currentSuperState = SuperState.SPEAKER_SHOT;
@@ -200,6 +205,9 @@ public class Superstructure extends SubsystemBase {
             case AMP_SHOT:
                 handleAmpShot();
                 break;
+            case WEAK_SHOT:
+                handleWeakShot();
+                break;
             case SPEAKER_SHOT:
                 handleSpeakerShot();
                 break;
@@ -271,9 +279,17 @@ public class Superstructure extends SubsystemBase {
        
     }
 
+    private void handleWeakShot(){
+       // leds.setStrobeState(LightState.RED);
+        pivot.setWantedState(PivotSystemState.SUBWOOFER);
+        shotPrep = ShotPrepType.WEAK;
+       
+    }
+
+
     public void handleSubwooferShot(){
        // leds.setStrobeState(LightState.RAINBOW);
-        pivot.setWantedState(PivotSystemState.SUBWOOFER);
+        pivot.setWantedState(PivotSystemState.AMP);
         shotPrep = ShotPrepType.SUB;
     }
 
@@ -355,6 +371,9 @@ public class Superstructure extends SubsystemBase {
         }
         else if(this.shotPrep == ShotPrepType.SUB){
              shooter.setWantedState(ShooterSystemState.SHOOT);
+        }
+        else if(this.shotPrep == ShotPrepType.WEAK){
+             shooter.setWantedState(ShooterSystemState.WEAK);
         }
         else if(this.shotPrep == ShotPrepType.AUTO)
         {

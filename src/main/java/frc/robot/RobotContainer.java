@@ -45,11 +45,12 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeSystemState;
+import frc.robot.subsystems.LightsSubsystem.LightState;
 import frc.robot.subsystems.Superstructure.SuperState;
 
 public class RobotContainer {
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-  private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxSpeed = 0.15 * TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+  private double MaxAngularRate = 0.25 * Math.PI; // 
 
   //TODO: Fix
  // private IntakeSubsystem intake = IntakeSubsystem.getInstance();
@@ -105,6 +106,8 @@ public class RobotContainer {
         ));
 
     
+
+
     //ACCEPT THE NOTE - RUMBLE WHEN IN
     operatorControl.rightTrigger()
       .onTrue(superstructure.setWantedSuperStateCommand(SuperState.INTAKE))
@@ -151,7 +154,16 @@ public class RobotContainer {
       )
     );
 
- 
+    //Weak Shot for Demo Purposes
+    operatorControl.a().onTrue(superstructure.setWantedSuperStateCommand(SuperState.WEAK_SHOT));
+
+
+    operatorControl.b().onTrue(new InstantCommand(() -> LightsSubsystem.getInstance().setStrobeState(LightState.RAINBOW)));
+
+    
+    operatorControl.x().onTrue(new InstantCommand(() -> LightsSubsystem.getInstance().setStrobeState(LightState.OFF)));
+
+ /*
     operatorControl.a().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AMP_SHOT));
     //operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SPEAKER_SHOT));
     operatorControl.y().onTrue(superstructure.setWantedSuperStateCommand(SuperState.SUBWOOFER_SHOT));
@@ -159,7 +171,7 @@ public class RobotContainer {
     
     //treat the B button as auto aim.
     operatorControl.b().onTrue(superstructure.setWantedSuperStateCommand(SuperState.AUTO_SHOT));
-
+*/
     
 
     //Operator can manually STOW
@@ -180,12 +192,12 @@ public class RobotContainer {
      );
 
     //DRIVER CAN ROTATE to aim at April Tag
-    driverControl.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
+    /*driverControl.b().whileTrue(drivetrain.applyRequest(() -> rotate.withRotationalRate(  aprilTagRotation.getRotation() *  MaxAngularRate)));
    
     
     //DRIVER CAN MOVE LATERALLY TO the AMP, based on April Tag
 
-    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  - aprilTagLateral.getLateral() *  1.8))); //TODO Tune
+    driverControl.a().whileTrue(drivetrain.applyRequest(() -> lateralMovement.withVelocityX(  - aprilTagLateral.getLateral() *  1.8)));*/ //TODO Tune
 
     // reset the field-centric heading on left bumper press
     driverControl.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
